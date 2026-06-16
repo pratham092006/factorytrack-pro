@@ -235,7 +235,7 @@ router.post('/logout', async (req, res) => {
   try {
     const token = req.headers.authorization?.replace('Bearer ', '');
 
-    if (token) {
+    if (token && !global.useLocalDB && supabase) {
       await supabase.auth.signOut();
     }
 

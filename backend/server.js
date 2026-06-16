@@ -25,6 +25,9 @@ app.use(express.static(frontendPath));
 // Test Supabase connection
 async function testSupabaseConnection() {
   try {
+    if (!supabase) {
+      return false;
+    }
     const { data, error } = await supabase.from('users').select('count').limit(1);
     if (error && error.code !== 'PGRST116') { // PGRST116 = no rows, which is fine
       console.error('❌ Supabase connection error:', error.message);
