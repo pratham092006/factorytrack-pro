@@ -1956,3 +1956,202 @@ tbody tr:last-child td {
 [data-theme="dark"] .vertical-pill.red .vertical-pill-bar {
   background: hsl(350, 89%, 50%);
 }
+
+/* ===== MOBILE & TOUCH VIEW OPTIMIZATIONS ===== */
+
+.btn:active, .nav-item:active, .icon-btn:active, .toggle-pill:active {
+  transform: scale(0.97);
+}
+
+@media (max-width: 768px) {
+  /* Tables compact spacing to fit more content */
+  thead th {
+    padding: 12px 14px;
+    font-size: 10px;
+    letter-spacing: 0.5px;
+  }
+  tbody td {
+    padding: 12px 14px;
+    font-size: 12px;
+  }
+  
+  /* Modals scale and margins adjustment */
+  .modal-backdrop {
+    padding: 12px;
+  }
+  .modal {
+    border-radius: 16px;
+    max-height: 95vh;
+  }
+  .modal-header {
+    padding: 16px 20px;
+  }
+  .modal-title {
+    font-size: 18px;
+  }
+  .modal-body {
+    padding: 20px;
+  }
+  .modal-footer {
+    padding: 12px 20px;
+  }
+
+  /* Reduce grid gaps */
+  .grid-2, .grid-3, .grid-main-chart {
+    gap: 16px;
+  }
+
+  /* Header adjustments */
+  .header {
+    padding: 0 16px;
+    gap: 12px;
+  }
+  .header-title {
+    font-size: 16px;
+  }
+  .search-box input {
+    min-width: 150px;
+    padding-left: 36px;
+  }
+  .search-box input:focus {
+    min-width: 180px;
+  }
+  .search-box .material-symbols-outlined {
+    left: 10px;
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 576px) {
+  /* Hide page title when search is visible */
+  .header-title {
+    display: none;
+  }
+  .search-box {
+    flex: 1;
+  }
+  .search-box input, .search-box input:focus {
+    width: 100%;
+    min-width: unset;
+  }
+
+  /* Full-width interactive elements and block buttons in headers */
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .page-header-info {
+    text-align: left;
+  }
+  .page-header-actions {
+    width: 100%;
+    display: flex;
+    gap: 8px;
+  }
+  .page-header-actions .btn, 
+  .page-header-actions select, 
+  .page-header-actions input[type="date"] {
+    flex: 1;
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Statistics grid cards scaling */
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+  .stat-card {
+    padding: 12px;
+    gap: 8px;
+    border-radius: 12px;
+  }
+  .stat-icon-wrapper {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+  }
+  .stat-icon-wrapper .material-symbols-outlined {
+    font-size: 18px;
+  }
+  .stat-value {
+    font-size: 16px;
+    font-weight: 800;
+  }
+  .stat-label {
+    font-size: 10px;
+  }
+
+  /* Shift summary capsules sizing */
+  .attendance-pills-container {
+    gap: 8px;
+    height: 160px;
+  }
+  .att-pill-top {
+    padding: 10px;
+  }
+  .att-pill-top .val {
+    font-size: 22px;
+    margin-bottom: 2px;
+  }
+  .att-pill-top .lbl {
+    font-size: 9px;
+    letter-spacing: 0.4px;
+  }
+  .att-pill-bottom {
+    height: 44px;
+    font-size: 9px;
+    gap: 2px;
+  }
+  .att-pill-bottom .material-symbols-outlined {
+    font-size: 14px;
+  }
+
+  /* Banner and stats display */
+  .dashboard-banner {
+    padding: 16px;
+    border-radius: 16px;
+    gap: 16px;
+  }
+  .dashboard-banner h1 {
+    font-size: 18px;
+    letter-spacing: -0.4px;
+  }
+  .dashboard-banner p {
+    font-size: 11px;
+    line-height: 1.4;
+  }
+  .banner-stats {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 12px;
+    gap: 12px;
+    justify-content: space-around;
+  }
+  .banner-stat-item .val {
+    font-size: 15px;
+  }
+  .banner-stat-item .lbl {
+    font-size: 9px;
+    margin-top: 2px;
+  }
+  .banner-stat-divider {
+    height: 24px;
+  }
+
+  /* Toast alerts stretching */
+  .toast-container {
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    width: auto;
+  }
+  .toast {
+    min-width: unset;
+    max-width: none;
+    width: 100%;
+    padding: 12px;
+    font-size: 12px;
+  }
+}

@@ -107,77 +107,100 @@ ALTER TABLE savings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE payments ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies for users table
+DROP POLICY IF EXISTS "Users can view own data" ON users;
 CREATE POLICY "Users can view own data" ON users
   FOR SELECT USING (auth.uid() = id);
 
+DROP POLICY IF EXISTS "Users can update own data" ON users;
 CREATE POLICY "Users can update own data" ON users
   FOR UPDATE USING (auth.uid() = id);
 
+DROP POLICY IF EXISTS "Users can insert own data" ON users;
 CREATE POLICY "Users can insert own data" ON users
   FOR INSERT WITH CHECK (auth.uid() = id);
 
 -- RLS Policies for staff table
+DROP POLICY IF EXISTS "Users can view own staff" ON staff;
 CREATE POLICY "Users can view own staff" ON staff
   FOR SELECT USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can insert own staff" ON staff;
 CREATE POLICY "Users can insert own staff" ON staff
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update own staff" ON staff;
 CREATE POLICY "Users can update own staff" ON staff
   FOR UPDATE USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete own staff" ON staff;
 CREATE POLICY "Users can delete own staff" ON staff
   FOR DELETE USING (auth.uid() = user_id);
 
 -- RLS Policies for attendance table
+DROP POLICY IF EXISTS "Users can view own attendance" ON attendance;
 CREATE POLICY "Users can view own attendance" ON attendance
   FOR SELECT USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can insert own attendance" ON attendance;
 CREATE POLICY "Users can insert own attendance" ON attendance
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update own attendance" ON attendance;
 CREATE POLICY "Users can update own attendance" ON attendance
   FOR UPDATE USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete own attendance" ON attendance;
 CREATE POLICY "Users can delete own attendance" ON attendance
   FOR DELETE USING (auth.uid() = user_id);
 
 -- RLS Policies for advances table
+DROP POLICY IF EXISTS "Users can view own advances" ON advances;
 CREATE POLICY "Users can view own advances" ON advances
   FOR SELECT USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can insert own advances" ON advances;
 CREATE POLICY "Users can insert own advances" ON advances
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update own advances" ON advances;
 CREATE POLICY "Users can update own advances" ON advances
   FOR UPDATE USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete own advances" ON advances;
 CREATE POLICY "Users can delete own advances" ON advances
   FOR DELETE USING (auth.uid() = user_id);
 
 -- RLS Policies for savings table
+DROP POLICY IF EXISTS "Users can view own savings" ON savings;
 CREATE POLICY "Users can view own savings" ON savings
   FOR SELECT USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can insert own savings" ON savings;
 CREATE POLICY "Users can insert own savings" ON savings
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update own savings" ON savings;
 CREATE POLICY "Users can update own savings" ON savings
   FOR UPDATE USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete own savings" ON savings;
 CREATE POLICY "Users can delete own savings" ON savings
   FOR DELETE USING (auth.uid() = user_id);
 
 -- RLS Policies for payments table
+DROP POLICY IF EXISTS "Users can view own payments" ON payments;
 CREATE POLICY "Users can view own payments" ON payments
   FOR SELECT USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can insert own payments" ON payments;
 CREATE POLICY "Users can insert own payments" ON payments
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update own payments" ON payments;
 CREATE POLICY "Users can update own payments" ON payments
   FOR UPDATE USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete own payments" ON payments;
 CREATE POLICY "Users can delete own payments" ON payments
   FOR DELETE USING (auth.uid() = user_id);
 
@@ -191,21 +214,27 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Create triggers for updated_at
+DROP TRIGGER IF EXISTS update_users_updated_at ON users;
 CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_staff_updated_at ON staff;
 CREATE TRIGGER update_staff_updated_at BEFORE UPDATE ON staff
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_attendance_updated_at ON attendance;
 CREATE TRIGGER update_attendance_updated_at BEFORE UPDATE ON attendance
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_advances_updated_at ON advances;
 CREATE TRIGGER update_advances_updated_at BEFORE UPDATE ON advances
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_savings_updated_at ON savings;
 CREATE TRIGGER update_savings_updated_at BEFORE UPDATE ON savings
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_payments_updated_at ON payments;
 CREATE TRIGGER update_payments_updated_at BEFORE UPDATE ON payments
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
