@@ -1966,22 +1966,24 @@ tbody tr:last-child td {
 @media (max-width: 768px) {
   /* Tables compact spacing to fit more content */
   thead th {
-    padding: 12px 14px;
+    padding: 10px 12px;
     font-size: 10px;
     letter-spacing: 0.5px;
   }
   tbody td {
-    padding: 12px 14px;
+    padding: 10px 12px;
     font-size: 12px;
   }
   
   /* Modals scale and margins adjustment */
   .modal-backdrop {
     padding: 12px;
+    align-items: flex-end; /* Bottom sheet style on mobile for better thumb reach */
   }
   .modal {
-    border-radius: 16px;
-    max-height: 95vh;
+    border-radius: 20px 20px 0 0;
+    max-height: 92vh;
+    margin-bottom: -12px;
   }
   .modal-header {
     padding: 16px 20px;
@@ -1996,9 +1998,42 @@ tbody tr:last-child td {
     padding: 12px 20px;
   }
 
-  /* Reduce grid gaps */
+  /* Stack grid layouts on mobile */
   .grid-2, .grid-3, .grid-main-chart {
+    grid-template-columns: 1fr !important;
     gap: 16px;
+  }
+
+  /* Stack form rows on mobile */
+  .form-row, .form-row-3 {
+    grid-template-columns: 1fr !important;
+    gap: 12px;
+  }
+
+  /* Stack page headers on mobile */
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .page-header-actions {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .page-header-actions .btn, 
+  .page-header-actions select, 
+  .page-header-actions input {
+    flex: 1;
+    min-width: 120px;
+    justify-content: center;
+  }
+
+  /* Stats grid display side-by-side on mobile */
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
   }
 
   /* Header adjustments */

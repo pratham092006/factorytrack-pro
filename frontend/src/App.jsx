@@ -11,6 +11,7 @@ import Payments from './pages/Payments';
 import Reports from './pages/Reports';
 import Settings from './pages/Settings';
 import Auth from './pages/Auth';
+import Analytics from './pages/Analytics';
 
 import {
   getCurrentUser,
@@ -650,6 +651,8 @@ export default function App() {
             }}
           />
         );
+      case 'analytics':
+        return <Analytics {...commonProps} />;
       case 'reports':
         return <Reports {...commonProps} />;
       case 'settings':

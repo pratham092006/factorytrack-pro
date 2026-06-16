@@ -287,7 +287,7 @@ router.get('/attendance/all', async (req, res) => {
     res.json({ success: true, attendance: data || [] });
   } catch (error) {
     console.error('Error fetching attendance:', error);
-    res.status(500).json({ success: false, message: 'Error fetching attendance' });
+    res.status(500).json({ success: false, message: error.message || 'Error fetching attendance' });
   }
 });
 
@@ -318,7 +318,7 @@ router.post('/:id/attendance', async (req, res) => {
     res.status(201).json({ success: true, attendance: data });
   } catch (error) {
     console.error('Error marking attendance:', error);
-    res.status(500).json({ success: false, message: 'Error marking attendance' });
+    res.status(500).json({ success: false, message: error.message || 'Error marking attendance' });
   }
 });
 
@@ -347,7 +347,7 @@ router.put('/attendance/:id', async (req, res) => {
     res.json({ success: true, attendance: data });
   } catch (error) {
     console.error('Error updating attendance:', error);
-    res.status(500).json({ success: false, message: 'Error updating attendance' });
+    res.status(500).json({ success: false, message: error.message || 'Error updating attendance' });
   }
 });
 
@@ -365,7 +365,7 @@ router.delete('/attendance/:id', async (req, res) => {
     res.json({ success: true, message: 'Attendance deleted successfully' });
   } catch (error) {
     console.error('Error deleting attendance:', error);
-    res.status(500).json({ success: false, message: 'Error deleting attendance' });
+    res.status(500).json({ success: false, message: error.message || 'Error deleting attendance' });
   }
 });
 
@@ -392,7 +392,7 @@ router.get('/advances/all', async (req, res) => {
     res.json({ success: true, advances: data || [] });
   } catch (error) {
     console.error('Error fetching advances:', error);
-    res.status(500).json({ success: false, message: 'Error fetching advances' });
+    res.status(500).json({ success: false, message: error.message || 'Error fetching advances' });
   }
 });
 
@@ -421,7 +421,7 @@ router.post('/:id/advances', async (req, res) => {
     res.status(201).json({ success: true, advance: data });
   } catch (error) {
     console.error('Error adding advance:', error);
-    res.status(500).json({ success: false, message: 'Error adding advance' });
+    res.status(500).json({ success: false, message: error.message || 'Error adding advance' });
   }
 });
 
@@ -448,7 +448,7 @@ router.put('/advances/:id', async (req, res) => {
     res.json({ success: true, advance: data });
   } catch (error) {
     console.error('Error updating advance:', error);
-    res.status(500).json({ success: false, message: 'Error updating advance' });
+    res.status(500).json({ success: false, message: error.message || 'Error updating advance' });
   }
 });
 
@@ -466,7 +466,7 @@ router.delete('/advances/:id', async (req, res) => {
     res.json({ success: true, message: 'Advance deleted successfully' });
   } catch (error) {
     console.error('Error deleting advance:', error);
-    res.status(500).json({ success: false, message: 'Error deleting advance' });
+    res.status(500).json({ success: false, message: error.message || 'Error deleting advance' });
   }
 });
 
@@ -493,7 +493,7 @@ router.get('/savings/all', async (req, res) => {
     res.json({ success: true, savings: data || [] });
   } catch (error) {
     console.error('Error fetching savings:', error);
-    res.status(500).json({ success: false, message: 'Error fetching savings' });
+    res.status(500).json({ success: false, message: error.message || 'Error fetching savings' });
   }
 });
 
@@ -522,7 +522,7 @@ router.post('/:id/savings', async (req, res) => {
     res.status(201).json({ success: true, saving: data });
   } catch (error) {
     console.error('Error adding saving:', error);
-    res.status(500).json({ success: false, message: 'Error adding saving' });
+    res.status(500).json({ success: false, message: error.message || 'Error adding saving' });
   }
 });
 
@@ -540,7 +540,7 @@ router.delete('/savings/:id', async (req, res) => {
     res.json({ success: true, message: 'Saving deleted successfully' });
   } catch (error) {
     console.error('Error deleting saving:', error);
-    res.status(500).json({ success: false, message: 'Error deleting saving' });
+    res.status(500).json({ success: false, message: error.message || 'Error deleting saving' });
   }
 });
 
@@ -567,7 +567,7 @@ router.get('/payments/all', async (req, res) => {
     res.json({ success: true, payments: data || [] });
   } catch (error) {
     console.error('Error fetching payments:', error);
-    res.status(500).json({ success: false, message: 'Error fetching payments' });
+    res.status(500).json({ success: false, message: error.message || 'Error fetching payments' });
   }
 });
 
@@ -596,7 +596,7 @@ router.post('/:id/payments', async (req, res) => {
     res.status(201).json({ success: true, payment: data });
   } catch (error) {
     console.error('Error recording payment:', error);
-    res.status(500).json({ success: false, message: 'Error recording payment' });
+    res.status(500).json({ success: false, message: error.message || 'Error recording payment' });
   }
 });
 
@@ -614,7 +614,7 @@ router.delete('/payments/:id', async (req, res) => {
     res.json({ success: true, message: 'Payment deleted successfully' });
   } catch (error) {
     console.error('Error deleting payment:', error);
-    res.status(500).json({ success: false, message: 'Error deleting payment' });
+    res.status(500).json({ success: false, message: error.message || 'Error deleting payment' });
   }
 });
 
