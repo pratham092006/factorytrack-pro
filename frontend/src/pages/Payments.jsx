@@ -66,9 +66,9 @@ export default function Payments({
                 {/* Card Header */}
                 <div className="card-header">
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1 }}>
-                    <div className="user-avatar">{s.name[0].toUpperCase()}</div>
+                    <div className="user-avatar">{s.name?.[0]?.toUpperCase() || '?'}</div>
                     <div>
-                      <div style={{ fontWeight: 700 }}>{s.name}</div>
+                      <div style={{ fontWeight: 700 }}>{s.name || 'Unknown Staff'}</div>
                       <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
                         {s.staffId} · {s.salaryType === 'monthly' ? 'Monthly' : 'Daily Wage'}
                       </div>

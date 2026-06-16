@@ -79,10 +79,10 @@ export default function Staff({
                       <td>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                           <div className="user-avatar">
-                            {s.name[0].toUpperCase()}
+                            {s.name?.[0]?.toUpperCase() || '?'}
                           </div>
                           <div>
-                            <div style={{ fontWeight: 600 }}>{s.name}</div>
+                            <div style={{ fontWeight: 600 }}>{s.name || 'Unknown Staff'}</div>
                             <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{s.mobile}</div>
                           </div>
                         </div>

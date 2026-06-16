@@ -155,10 +155,10 @@ export default function Reports({
                   <td>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                       <div className="user-avatar" style={{ width: '32px', height: '32px', fontSize: '13px' }}>
-                        {r.name[0].toUpperCase()}
+                        {r.name?.[0]?.toUpperCase() || '?'}
                       </div>
                       <div>
-                        <div style={{ fontWeight: 600, fontSize: '13px' }}>{r.name}</div>
+                        <div style={{ fontWeight: 600, fontSize: '13px' }}>{r.name || 'Unknown Staff'}</div>
                         <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{r.staffId}</div>
                       </div>
                     </div>

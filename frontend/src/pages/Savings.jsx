@@ -62,10 +62,10 @@ export default function Savings({
                 <div className="card-body">
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
                     <div className="user-avatar">
-                      {s.name[0].toUpperCase()}
+                      {s.name?.[0]?.toUpperCase() || '?'}
                     </div>
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: 600, fontSize: '13px' }}>{s.name}</div>
+                      <div style={{ fontWeight: 600, fontSize: '13px' }}>{s.name || 'Unknown Staff'}</div>
                       <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{s.staffId}</div>
                     </div>
                   </div>
@@ -148,9 +148,9 @@ export default function Savings({
                       <td>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                           <div className="user-avatar" style={{ width: '28px', height: '28px', fontSize: '11px' }}>
-                            {s ? s.name[0].toUpperCase() : '?'}
+                            {s?.name?.[0]?.toUpperCase() || '?'}
                           </div>
-                          <strong>{s ? s.name : 'Unknown Staff'}</strong>
+                          <strong>{s?.name || 'Unknown Staff'}</strong>
                         </div>
                       </td>
                       <td>{fmtDate(r.date)}</td>

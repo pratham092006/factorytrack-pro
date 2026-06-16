@@ -75,7 +75,7 @@ export default function Dashboard({
       salaryChartInstance.current = new Chart(salaryChartCtx, {
         type: 'bar',
         data: {
-          labels: salData.map(x => x.name.split(' ')[0]),
+          labels: salData.map(x => (x.name || 'Unknown').split(' ')[0]),
           datasets: [{
             label: 'Gross Salary',
             data: salData.map(x => x.gross),
@@ -339,10 +339,10 @@ export default function Dashboard({
                         #{idx + 1}
                       </div>
                       <div className="user-avatar" style={{ width: '30px', height: '30px', fontSize: '11px' }}>
-                        {e.s.name[0].toUpperCase()}
+                        {e.s.name?.[0]?.toUpperCase() || '?'}
                       </div>
                       <div style={{ flex: 1 }}>
-                        <div style={{ fontWeight: 700, fontSize: '13px', color: 'var(--text-primary)' }}>{e.s.name}</div>
+                        <div style={{ fontWeight: 700, fontSize: '13px', color: 'var(--text-primary)' }}>{e.s.name || 'Unknown Staff'}</div>
                         <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{e.s.staffId}</div>
                       </div>
                       <div style={{ fontWeight: 800, color: 'var(--primary)', fontSize: '14px' }}>
@@ -425,10 +425,10 @@ export default function Dashboard({
                 {newStaff.map((s) => (
                   <div key={s.id} className="list-item">
                     <div className="user-avatar" style={{ width: '30px', height: '30px', fontSize: '11px' }}>
-                      {s.name[0].toUpperCase()}
+                      {s.name?.[0]?.toUpperCase() || '?'}
                     </div>
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: 700, fontSize: '13px', color: 'var(--text-primary)' }}>{s.name}</div>
+                      <div style={{ fontWeight: 700, fontSize: '13px', color: 'var(--text-primary)' }}>{s.name || 'Unknown Staff'}</div>
                       <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Joined {fmtDate(s.joiningDate)}</div>
                     </div>
                     <span className="badge badge-primary" style={{ fontSize: '10px' }}>

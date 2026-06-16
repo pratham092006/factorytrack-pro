@@ -722,10 +722,10 @@ export function ProfileModal({ isOpen, onClose, staffMember, attendance, advance
         {/* Profile Card Header (Matching Caleb White Student Details Header) */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '24px', flexWrap: 'wrap' }}>
           <div className="user-avatar" style={{ width: '64px', height: '64px', fontSize: '24px', background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%)' }}>
-            {staffMember.name[0].toUpperCase()}
+            {staffMember.name?.[0]?.toUpperCase() || '?'}
           </div>
           <div style={{ flex: 1, minWidth: '200px' }}>
-            <h2 style={{ fontSize: '20px', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '4px', letterSpacing: '-0.4px' }}>{staffMember.name}</h2>
+            <h2 style={{ fontSize: '20px', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '4px', letterSpacing: '-0.4px' }}>{staffMember.name || 'Unknown Staff'}</h2>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(110px, 1fr))', gap: '12px', marginTop: '8px' }}>
               <div>
                 <div style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.8px', color: 'var(--text-muted)', fontWeight: 700 }}>Staff ID</div>
@@ -853,7 +853,7 @@ export function ProfileModal({ isOpen, onClose, staffMember, attendance, advance
 
           {/* Right Column: Summary - Employee Name (Oakridge Vertical Pills) */}
           <div style={{ background: '#FFFFFF', border: '1px solid var(--border)', borderRadius: '20px', padding: '20px', boxShadow: 'var(--shadow-sm)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div style={{ fontSize: '15px', fontWeight: 800, color: 'var(--text-primary)' }}>Summary - {staffMember.name.split(' ')[0]}</div>
+            <div style={{ fontSize: '15px', fontWeight: 800, color: 'var(--text-primary)' }}>Summary - {(staffMember.name || 'Unknown').split(' ')[0]}</div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px', height: '170px', alignItems: 'end' }}>
               
               {/* Attendance vertical pill (Blue) */}

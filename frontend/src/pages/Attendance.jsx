@@ -131,10 +131,10 @@ export default function Attendance({
                   <td>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <div className="user-avatar" style={{ background: 'var(--neutral)' }}>
-                        {s.name[0].toUpperCase()}
+                        {s.name?.[0]?.toUpperCase() || '?'}
                       </div>
                       <div>
-                        <strong>{s.name}</strong>
+                        <strong>{s.name || 'Unknown Staff'}</strong>
                         <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{s.staffId}</div>
                       </div>
                     </div>
@@ -176,10 +176,10 @@ export default function Attendance({
                       <td>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                           <div className="user-avatar">
-                            {s ? s.name[0].toUpperCase() : '?'}
+                            {s?.name?.[0]?.toUpperCase() || '?'}
                           </div>
                           <div>
-                            <strong>{s ? s.name : 'Unknown Staff'}</strong>
+                            <strong>{s?.name || 'Unknown Staff'}</strong>
                             <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{s ? s.staffId : ''}</div>
                           </div>
                         </div>
