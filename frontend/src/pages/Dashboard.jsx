@@ -17,7 +17,8 @@ export default function Dashboard({
   today,
   thisMonthKey,
   monthLabel,
-  getMonthKeys
+  getMonthKeys,
+  currentUser
 }) {
   const [selectedMonth, setSelectedMonth] = useState(thisMonthKey());
   const salaryChartRef = useRef(null);
@@ -51,8 +52,8 @@ export default function Dashboard({
     if (attendanceChartInstance.current) attendanceChartInstance.current.destroy();
 
     const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-    const textColor = isDark ? '#8b949e' : '#475569';
-    const gridColor = isDark ? '#334155' : '#e2e8f0';
+    const textColor = isDark ? 'hsl(215, 20%, 75%)' : 'hsl(215, 16%, 35%)';
+    const gridColor = isDark ? 'hsl(222, 30%, 18%)' : 'hsl(214, 32%, 91%)';
 
     // 1. Salary Expense Chart
     const salaryChartCtx = salaryChartRef.current?.getContext('2d');
@@ -61,6 +62,16 @@ export default function Dashboard({
         .map(s => ({ name: s.name, gross: calcStaffSalary(s.id, selectedMonth)?.grossSalary || 0 }))
         .filter(x => x.gross > 0);
 
+      // Create primary color gradient
+      const gradient = salaryChartCtx.createLinearGradient(0, 0, 0, 240);
+      if (isDark) {
+        gradient.addColorStop(0, 'rgba(59, 130, 246, 0.8)');
+        gradient.addColorStop(1, 'rgba(59, 130, 246, 0.05)');
+      } else {
+        gradient.addColorStop(0, 'rgba(37, 99, 235, 0.85)');
+        gradient.addColorStop(1, 'rgba(37, 99, 235, 0.05)');
+      }
+
       salaryChartInstance.current = new Chart(salaryChartCtx, {
         type: 'bar',
         data: {
@@ -68,9 +79,12 @@ export default function Dashboard({
           datasets: [{
             label: 'Gross Salary',
             data: salData.map(x => x.gross),
-            backgroundColor: '#3B82F6',
-            borderRadius: 6,
-            barThickness: 24
+            backgroundColor: gradient,
+            hoverBackgroundColor: isDark ? 'rgba(59, 130, 246, 1)' : 'rgba(37, 99, 235, 1)',
+            borderColor: isDark ? '#3b82f6' : '#2563eb',
+            borderWidth: 1.5,
+            borderRadius: 8,
+            barThickness: 20
           }]
         },
         options: {
@@ -79,14 +93,19 @@ export default function Dashboard({
           plugins: { 
             legend: { display: false },
             tooltip: {
+              padding: 12,
+              cornerRadius: 12,
+              backgroundColor: isDark ? '#151e2e' : '#0f172a',
+              titleFont: { family: 'Plus Jakarta Sans', weight: 'bold' },
+              bodyFont: { family: 'Inter' },
               callbacks: {
                 label: (context) => `Gross Pay: ₹${context.raw.toLocaleString('en-IN')}`
               }
             }
           },
           scales: {
-            x: { ticks: { color: textColor }, grid: { display: false } },
-            y: { ticks: { color: textColor }, grid: { color: gridColor } }
+            x: { ticks: { color: textColor, font: { family: 'Plus Jakarta Sans', size: 11 } }, grid: { display: false } },
+            y: { ticks: { color: textColor, font: { family: 'Inter', size: 11 } }, grid: { color: gridColor } }
           }
         }
       });
@@ -102,9 +121,18 @@ export default function Dashboard({
           labels: ['Present', 'Absent', 'Not Marked'],
           datasets: [{
             data: [presentTodayCount, absentTodayCount, notMarkedCount],
-            backgroundColor: ['#10B981', '#EF4444', '#94A3B8'],
+            backgroundColor: [
+              'rgba(16, 185, 129, 0.85)',
+              'rgba(239, 68, 68, 0.85)',
+              isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.08)'
+            ],
+            hoverBackgroundColor: [
+              'rgba(16, 185, 129, 1)',
+              'rgba(239, 68, 68, 1)',
+              isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.12)'
+            ],
             borderWidth: isDark ? 2 : 1,
-            borderColor: isDark ? '#1E293B' : '#ffffff'
+            borderColor: isDark ? '#151E2E' : '#ffffff'
           }]
         },
         options: {
@@ -113,10 +141,24 @@ export default function Dashboard({
           plugins: {
             legend: {
               position: 'bottom',
-              labels: { color: textColor, boxWidth: 12, font: { size: 11 } }
+              labels: { 
+                color: textColor, 
+                boxWidth: 10, 
+                boxHeight: 10,
+                usePointStyle: true,
+                padding: 16,
+                font: { family: 'Plus Jakarta Sans', size: 11, weight: '600' } 
+              }
+            },
+            tooltip: {
+              padding: 12,
+              cornerRadius: 12,
+              backgroundColor: isDark ? '#151e2e' : '#0f172a',
+              titleFont: { family: 'Plus Jakarta Sans', weight: 'bold' },
+              bodyFont: { family: 'Inter' }
             }
           },
-          cutout: '65%'
+          cutout: '70%'
         }
       });
     }
@@ -134,10 +176,37 @@ export default function Dashboard({
 
   return (
     <div className="page-container fade-in">
-      {/* Page Header */}
-      <div className="page-header">
+      {/* Dashboard Welcome Hero Banner */}
+      <div className="dashboard-banner">
+        <div className="banner-glow-circle"></div>
+        <div className="banner-content">
+          <div className="banner-badge">
+            <span className="material-symbols-outlined">verified</span>
+            System Live & Syncing
+          </div>
+          <h1>Good day, {currentUser?.username ? (currentUser.username.charAt(0).toUpperCase() + currentUser.username.slice(1)) : 'Factory Manager'}!</h1>
+          <p>
+            You have <strong>{staff.length} staff</strong> members active. Today's attendance is 
+            <strong> {presentTodayCount} present</strong> and <strong>{absentTodayCount} absent</strong> (<strong>{Math.round(((presentTodayCount + absentTodayCount) / (staff.length || 1)) * 100)}%</strong> marked).
+          </p>
+        </div>
+        <div className="banner-stats">
+          <div className="banner-stat-item">
+            <div className="val">{monthLabel(selectedMonth).split(' ')[0]}</div>
+            <div className="lbl">Active Period</div>
+          </div>
+          <div className="banner-stat-divider"></div>
+          <div className="banner-stat-item">
+            <div className="val">{fmtCurrency(totalSalary)}</div>
+            <div className="lbl">Salary Payable</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Control Actions Row */}
+      <div className="page-header" style={{ marginTop: '8px' }}>
         <div className="page-header-info">
-          <div className="page-header-title">Factory Overview</div>
+          <div className="page-header-title" style={{ fontSize: '18px', fontWeight: 800 }}>Factory Overview</div>
           <div className="page-header-subtitle">Update and monitor daily factory attendance and payroll status</div>
         </div>
         <div className="page-header-actions">
@@ -261,25 +330,27 @@ export default function Dashboard({
           </div>
           <div className="card-body" style={{ padding: '12px 24px' }}>
             {earners.length > 0 && earners.some(e => e.gross > 0) ? (
-              earners
-                .filter(e => e.gross > 0)
-                .map((e, idx) => (
-                  <div key={e.s.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 0', borderBottom: idx < earners.length - 1 ? '1px solid var(--border)' : 'none' }}>
-                    <div style={{ width: '26px', height: '26px', background: 'var(--primary-light)', borderRadius: '50%', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 700 }}>
-                      #{idx + 1}
+              <div className="list-group">
+                {earners
+                  .filter(e => e.gross > 0)
+                  .map((e, idx) => (
+                    <div key={e.s.id} className="list-item">
+                      <div className="rank-badge">
+                        #{idx + 1}
+                      </div>
+                      <div className="user-avatar" style={{ width: '30px', height: '30px', fontSize: '11px' }}>
+                        {e.s.name[0].toUpperCase()}
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontWeight: 700, fontSize: '13px', color: 'var(--text-primary)' }}>{e.s.name}</div>
+                        <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{e.s.staffId}</div>
+                      </div>
+                      <div style={{ fontWeight: 800, color: 'var(--primary)', fontSize: '14px' }}>
+                        {fmtCurrency(e.gross)}
+                      </div>
                     </div>
-                    <div className="user-avatar" style={{ width: '30px', height: '30px', fontSize: '11px' }}>
-                      {e.s.name[0].toUpperCase()}
-                    </div>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: 600, fontSize: '13px' }}>{e.s.name}</div>
-                      <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>{e.s.staffId}</div>
-                    </div>
-                    <div style={{ fontWeight: 700, color: 'var(--primary)' }}>
-                      {fmtCurrency(e.gross)}
-                    </div>
-                  </div>
-                ))
+                  ))}
+              </div>
             ) : (
               <div className="empty-state">
                 <span className="material-symbols-outlined empty-icon">group</span>
@@ -303,19 +374,19 @@ export default function Dashboard({
           </div>
           <div className="card-body" style={{ padding: '12px 24px' }}>
             {todayAtt.length > 0 ? (
-              <>
-                {todayAtt.slice(0, 5).map((a, idx) => {
+              <div className="list-group">
+                {todayAtt.slice(0, 5).map((a) => {
                   const s = staff.find(x => x.id === a.staffId);
                   const statusBadge = {
                     present: 'badge-success', absent: 'badge-danger',
                     'half-day': 'badge-warning', leave: 'badge-info'
                   }[a.status] || 'badge-gray';
                   return (
-                    <div key={a.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '11px 0', borderBottom: idx < Math.min(todayAtt.length, 5) - 1 ? '1px solid var(--border)' : 'none' }}>
+                    <div key={a.id} className="list-item">
                       <div className="user-avatar" style={{ width: '30px', height: '30px', fontSize: '11px' }}>
                         {s ? s.name[0].toUpperCase() : '?'}
                       </div>
-                      <div style={{ flex: 1, fontSize: '13px', fontWeight: 500 }}>
+                      <div style={{ flex: 1, fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)' }}>
                         {s ? s.name : 'Unknown Staff'}
                       </div>
                       <span className={`badge ${statusBadge}`}>
@@ -325,11 +396,11 @@ export default function Dashboard({
                   );
                 })}
                 {todayAtt.length > 5 && (
-                  <div style={{ textAlign: 'center', padding: '10px 0 0', fontSize: '12px', color: 'var(--text-muted)', borderTop: '1px solid var(--border)' }}>
+                  <div style={{ textAlign: 'center', padding: '12px 0 0', fontSize: '12px', color: 'var(--text-muted)', borderTop: '1px solid var(--border)' }}>
                     + {todayAtt.length - 5} more staff members marked
                   </div>
                 )}
-              </>
+              </div>
             ) : (
               <div className="empty-state">
                 <span className="material-symbols-outlined empty-icon">assignment_late</span>
@@ -350,20 +421,22 @@ export default function Dashboard({
           </div>
           <div className="card-body" style={{ padding: '12px 24px' }}>
             {newStaff.length > 0 ? (
-              newStaff.map((s, idx) => (
-                <div key={s.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '11px 0', borderBottom: idx < newStaff.length - 1 ? '1px solid var(--border)' : 'none' }}>
-                  <div className="user-avatar" style={{ width: '30px', height: '30px', fontSize: '11px' }}>
-                    {s.name[0].toUpperCase()}
+              <div className="list-group">
+                {newStaff.map((s) => (
+                  <div key={s.id} className="list-item">
+                    <div className="user-avatar" style={{ width: '30px', height: '30px', fontSize: '11px' }}>
+                      {s.name[0].toUpperCase()}
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: 700, fontSize: '13px', color: 'var(--text-primary)' }}>{s.name}</div>
+                      <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Joined {fmtDate(s.joiningDate)}</div>
+                    </div>
+                    <span className="badge badge-primary" style={{ fontSize: '10px' }}>
+                      {s.staffId}
+                    </span>
                   </div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: 600, fontSize: '13px' }}>{s.name}</div>
-                    <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Joined {fmtDate(s.joiningDate)}</div>
-                  </div>
-                  <span className="badge badge-primary" style={{ fontSize: '10px' }}>
-                    {s.staffId}
-                  </span>
-                </div>
-              ))
+                ))}
+              </div>
             ) : (
               <div className="empty-state">
                 <span className="material-symbols-outlined empty-icon">person_add</span>
@@ -384,34 +457,34 @@ export default function Dashboard({
           </div>
           <div className="card-body">
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              <div className="payment-row" style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
-                <span style={{ color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <div className="payment-row" style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', padding: '4px 0' }}>
+                <span style={{ color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600 }}>
                   <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>credit_card</span>
                   Total Gross Payroll
                 </span>
-                <strong>{fmtCurrency(totalSalary)}</strong>
+                <strong style={{ color: 'var(--text-primary)', fontWeight: 700 }}>{fmtCurrency(totalSalary)}</strong>
               </div>
-              <div className="payment-row" style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
-                <span style={{ color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <div className="payment-row" style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', padding: '4px 0' }}>
+                <span style={{ color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600 }}>
                   <span className="material-symbols-outlined" style={{ fontSize: '16px', color: 'var(--danger)' }}>payments</span>
                   Outstanding Advances
                 </span>
-                <strong style={{ color: 'var(--danger)' }}>{fmtCurrency(totalAdv)}</strong>
+                <strong style={{ color: 'var(--danger)', fontWeight: 700 }}>{fmtCurrency(totalAdv)}</strong>
               </div>
-              <div className="payment-row" style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
-                <span style={{ color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <div className="payment-row" style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', padding: '4px 0' }}>
+                <span style={{ color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600 }}>
                   <span className="material-symbols-outlined" style={{ fontSize: '16px', color: 'var(--success)' }}>savings</span>
                   Worker Savings Held
                 </span>
-                <strong style={{ color: 'var(--success)' }}>{fmtCurrency(totalSav)}</strong>
+                <strong style={{ color: 'var(--success)', fontWeight: 700 }}>{fmtCurrency(totalSav)}</strong>
               </div>
               <div style={{ height: '1px', background: 'var(--border)', margin: '4px 0' }}></div>
-              <div className="payment-row total" style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 700, fontSize: '15px' }}>
-                <span style={{ color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <div className="payment-row total" style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 800, fontSize: '16px', padding: '8px 0 0' }}>
+                <span style={{ color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <span className="material-symbols-outlined" style={{ fontSize: '18px', color: 'var(--primary)' }}>paid</span>
                   Net Monthly Payable
                 </span>
-                <span style={{ color: 'var(--primary)' }}>{fmtCurrency(totalSalary - totalAdv)}</span>
+                <span style={{ color: 'var(--primary)', fontWeight: 800 }}>{fmtCurrency(totalSalary - totalAdv)}</span>
               </div>
             </div>
           </div>
@@ -419,4 +492,5 @@ export default function Dashboard({
       </div>
     </div>
   );
+}
 }

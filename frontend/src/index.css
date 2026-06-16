@@ -137,9 +137,7 @@ button, input, select, textarea {
 /* ===== SIDEBAR ===== */
 .sidebar {
   width: var(--sidebar-width);
-  background: var(--bg-sidebar);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: linear-gradient(180deg, hsl(222, 47%, 9%) 0%, hsl(224, 35%, 15%) 100%);
   display: flex;
   flex-direction: column;
   position: fixed;
@@ -149,12 +147,12 @@ button, input, select, textarea {
   z-index: 100;
   transition: var(--transition-slow), transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   overflow-y: auto;
-  border-right: 1px solid var(--border);
+  border-right: 1px solid hsl(222, 30%, 16%);
 }
 
 .sidebar-header {
   padding: 24px 20px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid hsl(222, 30%, 16%);
   display: flex;
   align-items: center;
   gap: 12px;
@@ -163,7 +161,7 @@ button, input, select, textarea {
 .sidebar-logo-container {
   width: 40px;
   height: 40px;
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  background: linear-gradient(135deg, hsl(199, 89%, 48%) 0%, hsl(221, 83%, 53%) 100%);
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -171,7 +169,7 @@ button, input, select, textarea {
   color: white;
   font-size: 22px;
   flex-shrink: 0;
-  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+  box-shadow: 0 4px 14px rgba(14, 165, 233, 0.3);
   transition: var(--transition);
 }
 
@@ -187,14 +185,14 @@ button, input, select, textarea {
 .sidebar-title {
   font-size: 15px;
   font-weight: 800;
-  color: var(--text-primary);
+  color: hsl(210, 40%, 98%);
   line-height: 1.25;
   letter-spacing: -0.3px;
 }
 
 .sidebar-subtitle {
   font-size: 9px;
-  color: var(--primary);
+  color: hsl(199, 89%, 60%);
   text-transform: uppercase;
   letter-spacing: 1.2px;
   margin-top: 1px;
@@ -210,7 +208,7 @@ button, input, select, textarea {
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 1.5px;
-  color: var(--text-muted);
+  color: hsl(215, 20%, 55%);
   padding: 16px 12px 6px;
   font-weight: 800;
   opacity: 0.9;
@@ -223,7 +221,7 @@ button, input, select, textarea {
   padding: 10px 14px;
   border-radius: 10px;
   cursor: pointer;
-  color: var(--text-secondary);
+  color: hsl(215, 20%, 75%);
   transition: var(--transition);
   margin-bottom: 4px;
   font-size: 13px;
@@ -234,16 +232,17 @@ button, input, select, textarea {
 }
 
 .nav-item:hover {
-  background: var(--bg-sidebar-hover);
-  color: var(--primary);
+  background: rgba(255, 255, 255, 0.06);
+  color: hsl(0, 0%, 100%);
   transform: translateX(4px);
 }
 
 .nav-item.active {
-  background: var(--primary-light);
-  color: var(--primary);
+  background: linear-gradient(135deg, hsl(221, 83%, 53%) 0%, hsl(221, 83%, 45%) 100%);
+  color: hsl(0, 0%, 100%);
   font-weight: 700;
-  border-color: hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.12);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
 }
 
 .nav-item.active::before {
@@ -253,7 +252,7 @@ button, input, select, textarea {
   top: 25%;
   height: 50%;
   width: 3px;
-  background: var(--primary);
+  background: hsl(199, 89%, 60%);
   border-radius: 0 4px 4px 0;
 }
 
@@ -269,7 +268,7 @@ button, input, select, textarea {
 
 .sidebar-footer {
   padding: 16px 14px;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid hsl(222, 30%, 16%);
 }
 
 .user-card {
@@ -280,21 +279,21 @@ button, input, select, textarea {
   border-radius: 12px;
   cursor: pointer;
   transition: var(--transition);
-  color: var(--text-primary);
-  border: 1px solid transparent;
-  background: hsla(0, 0%, 100%, 0.01);
+  color: hsl(210, 40%, 98%);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .user-card:hover {
-  background: var(--bg-sidebar-hover);
-  border-color: hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.1);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.12);
   transform: translateY(-1px);
 }
 
 .user-avatar {
   width: 36px;
   height: 36px;
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  background: linear-gradient(135deg, hsl(199, 89%, 48%) 0%, hsl(221, 83%, 53%) 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -303,7 +302,7 @@ button, input, select, textarea {
   font-weight: 700;
   color: white;
   flex-shrink: 0;
-  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
+  box-shadow: 0 4px 10px rgba(14, 165, 233, 0.25);
 }
 
 .user-info {
@@ -314,7 +313,7 @@ button, input, select, textarea {
 .user-name {
   font-size: 13px;
   font-weight: 700;
-  color: var(--text-primary);
+  color: hsl(210, 40%, 98%);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -322,7 +321,7 @@ button, input, select, textarea {
 
 .user-role {
   font-size: 11px;
-  color: var(--text-muted);
+  color: hsl(215, 20%, 65%);
   font-weight: 600;
 }
 
@@ -1121,14 +1120,12 @@ tbody tr:last-child td {
   align-items: center;
   justify-content: center;
   padding: 20px;
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: backdropFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
-.modal-backdrop.open {
-  opacity: 1;
-  visibility: visible;
+@keyframes backdropFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .modal {
@@ -1139,13 +1136,13 @@ tbody tr:last-child td {
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: var(--shadow-lg);
-  transform: scale(0.9) translateY(40px);
-  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   border: 1px solid var(--border);
+  animation: modalSlideUp 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
-.modal-backdrop.open .modal {
-  transform: scale(1) translateY(0);
+@keyframes modalSlideUp {
+  from { transform: scale(0.9) translateY(40px); opacity: 0; }
+  to { transform: scale(1) translateY(0); opacity: 1; }
 }
 
 .modal-header {
@@ -1516,5 +1513,213 @@ tbody tr:last-child td {
   
   .form-row {
     grid-template-columns: 1fr;
+  }
+}
+
+/* ===== DASHBOARD HERO BANNER ===== */
+.dashboard-banner {
+  position: relative;
+  background: linear-gradient(135deg, hsl(221, 83%, 53%) 0%, hsl(221, 83%, 38%) 100%);
+  color: white;
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  overflow: hidden;
+  box-shadow: 0 12px 24px -8px hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.35);
+  gap: 24px;
+}
+
+[data-theme="dark"] .dashboard-banner {
+  background: linear-gradient(135deg, hsl(221, 83%, 45%) 0%, hsl(222.2, 47.4%, 9.5%) 100%);
+  box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.4);
+}
+
+.banner-glow-circle {
+  position: absolute;
+  top: -80px;
+  right: -80px;
+  width: 280px;
+  height: 280px;
+  background: radial-gradient(circle, hsla(199, 89%, 60%, 0.3) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.banner-content {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+}
+
+.banner-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+  padding: 6px 14px;
+  border-radius: 30px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.banner-badge .material-symbols-outlined {
+  font-size: 14px;
+}
+
+.dashboard-banner h1 {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.8px;
+  margin-bottom: 8px;
+  line-height: 1.2;
+}
+
+.dashboard-banner p {
+  font-size: 14px;
+  opacity: 0.9;
+  line-height: 1.5;
+  max-width: 580px;
+}
+
+.dashboard-banner p strong {
+  font-weight: 700;
+  color: hsl(199, 89%, 80%);
+}
+
+.banner-stats {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 18px 28px;
+  border-radius: 20px;
+  flex-shrink: 0;
+}
+
+[data-theme="dark"] .banner-stats {
+  background: rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+.banner-stat-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.banner-stat-item .val {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.4px;
+  line-height: 1.1;
+}
+
+.banner-stat-item .lbl {
+  font-size: 11px;
+  opacity: 0.7;
+  font-weight: 600;
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.banner-stat-divider {
+  width: 1px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* ===== LIST GROUPS & ITEMS ===== */
+.list-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.list-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+  transition: var(--transition);
+}
+
+.list-item:last-child {
+  border-bottom: none;
+}
+
+.list-item:hover {
+  transform: translateX(4px);
+}
+
+.rank-badge {
+  width: 28px;
+  height: 28px;
+  background: var(--primary-light);
+  border-radius: 50%;
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+/* ===== EMPTY STATE ===== */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-secondary);
+}
+
+.empty-icon {
+  font-size: 48px;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+  opacity: 0.6;
+  transition: var(--transition);
+}
+
+.empty-state:hover .empty-icon {
+  transform: scale(1.15) rotate(-5deg);
+  color: var(--primary);
+  opacity: 0.9;
+}
+
+.empty-state h3 {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: var(--text-primary);
+}
+
+.empty-state p {
+  font-size: 12px;
+  color: var(--text-muted);
+  max-width: 240px;
+  line-height: 1.4;
+}
+
+@media (max-width: 900px) {
+  .dashboard-banner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .banner-stats {
+    width: 100%;
+    justify-content: space-around;
   }
 }

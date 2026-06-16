@@ -543,7 +543,8 @@ export default function App() {
       thisMonthKey,
       today,
       getMonthKeys,
-      monthLabel
+      monthLabel,
+      currentUser
     };
 
     switch (activePage) {
