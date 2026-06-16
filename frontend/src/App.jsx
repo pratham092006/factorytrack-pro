@@ -109,6 +109,24 @@ export default function App() {
     checkSession();
   }, []);
 
+  // Listen for session expiration (401 Unauthorized)
+  useEffect(() => {
+    const handleUnauthorized = () => {
+      setCurrentUser(null);
+      setStaff([]);
+      setAttendance([]);
+      setAdvances([]);
+      setSavings([]);
+      setPayments([]);
+      showToast('Session expired. Please sign in again.', 'warning');
+    };
+
+    window.addEventListener('auth-unauthorized', handleUnauthorized);
+    return () => {
+      window.removeEventListener('auth-unauthorized', handleUnauthorized);
+    };
+  }, []);
+
   // Sync Dark Mode state to HTML tag
   useEffect(() => {
     if (darkMode) {
@@ -309,16 +327,14 @@ export default function App() {
     }
   };
 
-  const handleMarkAttendance = async (staffId, record) => {
+  const handleMarkAttendance = async (attendanceId, record) => {
     try {
-      // Check if there is an existing record for this date
-      const existing = attendance.find(a => a.staffId === staffId && a.date === record.date);
-      if (existing) {
-        const updated = await updateAttendance(existing.id, record);
+      if (attendanceId) {
+        const updated = await updateAttendance(attendanceId, record);
         setAttendance(prev => prev.map(a => a.id === updated.id ? updated : a));
         showToast('Attendance record updated.');
       } else {
-        const added = await markAttendance(staffId, record);
+        const added = await markAttendance(record.staffId, record);
         setAttendance(prev => [added, ...prev]);
         showToast('Attendance recorded.');
       }
@@ -375,14 +391,14 @@ export default function App() {
     }
   };
 
-  const handleSaveAdvance = async (staffId, record) => {
+  const handleSaveAdvance = async (advanceId, record) => {
     try {
-      if (record.id) {
-        const updated = await updateAdvance(record.id, record);
+      if (advanceId) {
+        const updated = await updateAdvance(advanceId, record);
         setAdvances(prev => prev.map(a => a.id === updated.id ? updated : a));
         showToast('Advance transaction updated.');
       } else {
-        const added = await addAdvance(staffId, record);
+        const added = await addAdvance(record.staffId, record);
         setAdvances(prev => [added, ...prev]);
         showToast('Advance given successfully!');
       }

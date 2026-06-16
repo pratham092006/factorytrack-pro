@@ -28,7 +28,18 @@ async function apiCall(endpoint, options = {}) {
 
   try {
     const response = await fetch(`${API_URL}${endpoint}`, config);
-    const data = await response.json();
+    
+    if (response.status === 401) {
+      setAuthToken('');
+      window.dispatchEvent(new Event('auth-unauthorized'));
+    }
+
+    let data;
+    try {
+      data = await response.json();
+    } catch (e) {
+      data = { message: response.statusText || 'Request failed' };
+    }
     
     if (!response.ok) {
       throw new Error(data.message || 'Request failed');

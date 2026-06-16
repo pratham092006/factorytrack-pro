@@ -61,6 +61,7 @@ export function StaffModal({ isOpen, onClose, staffMember, onSave }) {
     }
 
     const record = {
+      ...(staffMember?.id && { id: staffMember.id }),
       name,
       mobile,
       joiningDate,
@@ -81,7 +82,7 @@ export function StaffModal({ isOpen, onClose, staffMember, onSave }) {
       return;
     }
 
-    onSave(staffMember?.id, record);
+    onSave(record);
   };
 
   return (
