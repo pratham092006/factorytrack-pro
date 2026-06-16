@@ -1,4 +1,5 @@
 const supabase = require('../config/supabase');
+const dbFallback = require('../config/dbFallback');
 
 const auth = async (req, res, next) => {
   try {
@@ -9,6 +10,24 @@ const auth = async (req, res, next) => {
         success: false,
         message: 'No authentication token provided'
       });
+    }
+
+    if (global.useLocalDB) {
+      try {
+        const user = await dbFallback.getUserByToken(token);
+        req.user = {
+          id: user.id,
+          factory: user.factory,
+          username: user.username,
+          email: user.email
+        };
+        return next();
+      } catch (err) {
+        return res.status(401).json({
+          success: false,
+          message: 'Invalid or expired token'
+        });
+      }
     }
 
     // Verify token with Supabase

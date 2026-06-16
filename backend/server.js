@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
+const fs = require('fs');
 const supabase = require('./config/supabase');
 
 // Load environment variables
@@ -14,8 +15,12 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static files from frontend folder
-app.use(express.static(path.join(__dirname, '../frontend')));
+// Serve static files from frontend/dist (compiled React app) or fallback to frontend
+const frontendPath = fs.existsSync(path.join(__dirname, '../frontend/dist'))
+  ? path.join(__dirname, '../frontend/dist')
+  : path.join(__dirname, '../frontend');
+
+app.use(express.static(frontendPath));
 
 // Test Supabase connection
 async function testSupabaseConnection() {
@@ -35,7 +40,14 @@ async function testSupabaseConnection() {
 }
 
 // Test connection on startup
-testSupabaseConnection();
+testSupabaseConnection().then(connected => {
+  if (!connected) {
+    console.log('⚠️ Falling back to Local JSON File Database (c:\\TaskMaster\\backend\\config\\db.json) for this session.');
+    global.useLocalDB = true;
+  } else {
+    global.useLocalDB = false;
+  }
+});
 
 // API Routes
 app.use('/api/auth', require('./routes/auth'));
@@ -57,7 +69,7 @@ app.get('/api/health', async (req, res) => {
 
 // Serve main app (must come after API routes)
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/index.html'));
+  res.sendFile(path.join(frontendPath, 'index.html'));
 });
 
 // Error handling middleware
@@ -81,7 +93,7 @@ app.use('/api/*', (req, res) => {
 
 // 404 handler for other routes - redirect to main app
 app.use((req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/index.html'));
+  res.sendFile(path.join(frontendPath, 'index.html'));
 });
 
 const PORT = process.env.PORT || 5001;

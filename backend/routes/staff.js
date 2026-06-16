@@ -6,6 +6,144 @@ const auth = require('../middleware/auth');
 // Apply auth middleware to all routes
 router.use(auth);
 
+const dbFallback = require('../config/dbFallback');
+
+// Interceptor middleware for local DB fallback
+router.use(async (req, res, next) => {
+  if (!global.useLocalDB) return next();
+
+  const userId = req.user.id;
+  const method = req.method;
+  const path = req.path;
+
+  try {
+    // 1. Attendance All
+    if (method === 'GET' && path === '/attendance/all') {
+      const data = await dbFallback.getAttendance(userId);
+      return res.json({ success: true, attendance: data });
+    }
+    // 2. Advances All
+    if (method === 'GET' && path === '/advances/all') {
+      const data = await dbFallback.getAdvances(userId);
+      return res.json({ success: true, advances: data });
+    }
+    // 3. Savings All
+    if (method === 'GET' && path === '/savings/all') {
+      const data = await dbFallback.getSavings(userId);
+      return res.json({ success: true, savings: data });
+    }
+    // 4. Payments All
+    if (method === 'GET' && path === '/payments/all') {
+      const data = await dbFallback.getPayments(userId);
+      return res.json({ success: true, payments: data });
+    }
+    
+    // 5. Specific transactions updates
+    // PUT /attendance/:id
+    let match = path.match(/^\/attendance\/([^/]+)$/);
+    if (method === 'PUT' && match) {
+      const data = await dbFallback.updateAttendance(userId, match[1], req.body);
+      return res.json({ success: true, attendance: data });
+    }
+    // DELETE /attendance/:id
+    if (method === 'DELETE' && match) {
+      await dbFallback.deleteAttendance(userId, match[1]);
+      return res.json({ success: true, message: 'Deleted' });
+    }
+
+    // PUT /advances/:id
+    match = path.match(/^\/advances\/([^/]+)$/);
+    if (method === 'PUT' && match) {
+      const data = await dbFallback.updateAdvance(userId, match[1], req.body);
+      return res.json({ success: true, advance: data });
+    }
+    // DELETE /advances/:id
+    if (method === 'DELETE' && match) {
+      await dbFallback.deleteAdvance(userId, match[1]);
+      return res.json({ success: true, message: 'Deleted' });
+    }
+
+    // DELETE /savings/:id
+    match = path.match(/^\/savings\/([^/]+)$/);
+    if (method === 'DELETE' && match) {
+      await dbFallback.deleteSaving(userId, match[1]);
+      return res.json({ success: true, message: 'Deleted' });
+    }
+
+    // DELETE /payments/:id
+    match = path.match(/^\/payments\/([^/]+)$/);
+    if (method === 'DELETE' && match) {
+      await dbFallback.deletePayment(userId, match[1]);
+      return res.json({ success: true, message: 'Deleted' });
+    }
+
+    // 6. Root routes or parameter paths starting with ID
+    // GET /
+    if (method === 'GET' && path === '/') {
+      const data = await dbFallback.getStaff(userId);
+      return res.json({ success: true, staff: data });
+    }
+    // POST /
+    if (method === 'POST' && path === '/') {
+      const data = await dbFallback.addStaff(userId, req.body);
+      return res.status(201).json({ success: true, staff: data });
+    }
+
+    // Match /:id/attendance
+    match = path.match(/^\/([^/]+)\/attendance$/);
+    if (method === 'POST' && match) {
+      const data = await dbFallback.markAttendance(userId, match[1], req.body);
+      return res.status(201).json({ success: true, attendance: data });
+    }
+
+    // Match /:id/advances
+    match = path.match(/^\/([^/]+)\/advances$/);
+    if (method === 'POST' && match) {
+      const data = await dbFallback.addAdvance(userId, match[1], req.body);
+      return res.status(201).json({ success: true, advance: data });
+    }
+
+    // Match /:id/savings
+    match = path.match(/^\/([^/]+)\/savings$/);
+    if (method === 'POST' && match) {
+      const data = await dbFallback.addSaving(userId, match[1], req.body);
+      return res.status(201).json({ success: true, saving: data });
+    }
+
+    // Match /:id/payments
+    match = path.match(/^\/([^/]+)\/payments$/);
+    if (method === 'POST' && match) {
+      const data = await dbFallback.addPayment(userId, match[1], req.body);
+      return res.status(201).json({ success: true, payment: data });
+    }
+
+    // Match /:id
+    match = path.match(/^\/([^/]+)$/);
+    if (match) {
+      const id = match[1];
+      if (method === 'GET') {
+        const staffList = await dbFallback.getStaff(userId);
+        const item = staffList.find(s => s.id === id);
+        if (!item) return res.status(404).json({ success: false, message: 'Not found' });
+        return res.json({ success: true, staff: item });
+      }
+      if (method === 'PUT') {
+        const data = await dbFallback.updateStaff(userId, id, req.body);
+        return res.json({ success: true, staff: data });
+      }
+      if (method === 'DELETE') {
+        await dbFallback.deleteStaff(userId, id);
+        return res.json({ success: true, message: 'Deleted' });
+      }
+    }
+
+    next();
+  } catch (err) {
+    console.error('Local fallback DB dispatch error:', err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 // Get all staff for the current user's factory
 router.get('/', async (req, res) => {
   try {

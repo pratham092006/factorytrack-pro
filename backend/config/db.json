@@ -1,0 +1,17 @@
+{
+  "users": [
+    {
+      "id": "920dffde-9ead-455e-8d3f-8d5657746202",
+      "factory": "prathamnew",
+      "username": "pinglepratham618@gmail.com",
+      "email": "pinglepratham618@gmail.com@prathamnew.factorytrack.local",
+      "password": "adminadmin",
+      "created_at": "2026-06-16T14:12:02.920Z"
+    }
+  ],
+  "staff": [],
+  "attendance": [],
+  "advances": [],
+  "savings": [],
+  "payments": []
+}

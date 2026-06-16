@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const supabase = require('../config/supabase');
+const dbFallback = require('../config/dbFallback');
 
 // Register new user
 router.post('/register', async (req, res) => {
@@ -12,6 +13,27 @@ router.post('/register', async (req, res) => {
         success: false,
         message: 'Factory, username, and password are required'
       });
+    }
+
+    if (global.useLocalDB) {
+      try {
+        const user = await dbFallback.registerUser(factory, username, password);
+        return res.status(201).json({
+          success: true,
+          message: 'User registered successfully (Local Fallback DB)',
+          user: {
+            id: user.id,
+            factory: user.factory,
+            username: user.username,
+            email: user.email
+          }
+        });
+      } catch (err) {
+        return res.status(400).json({
+          success: false,
+          message: err.message
+        });
+      }
     }
 
     // Create user with Supabase Auth
@@ -84,6 +106,27 @@ router.post('/login', async (req, res) => {
 
     const email = `${username}@${factory}.factorytrack.local`;
 
+    if (global.useLocalDB) {
+      try {
+        const { user, token } = await dbFallback.loginUser(factory, username, password);
+        return res.json({
+          success: true,
+          token,
+          user: {
+            id: user.id,
+            factory: user.factory,
+            username: user.username,
+            email: user.email
+          }
+        });
+      } catch (err) {
+        return res.status(401).json({
+          success: false,
+          message: err.message
+        });
+      }
+    }
+
     // Sign in with Supabase Auth
     const { data, error } = await supabase.auth.signInWithPassword({
       email: email,
@@ -126,6 +169,26 @@ router.get('/me', async (req, res) => {
         success: false,
         message: 'No token provided'
       });
+    }
+
+    if (global.useLocalDB) {
+      try {
+        const user = await dbFallback.getUserByToken(token);
+        return res.json({
+          success: true,
+          user: {
+            id: user.id,
+            factory: user.factory,
+            username: user.username,
+            email: user.email
+          }
+        });
+      } catch (err) {
+        return res.status(401).json({
+          success: false,
+          message: err.message
+        });
+      }
     }
 
     // Verify token with Supabase
