@@ -22,6 +22,7 @@ function ModalWrapper({ isOpen, onClose, title, children }) {
    1. STAFF MODAL (ADD / EDIT)
    ========================================== */
 export function StaffModal({ isOpen, onClose, staffMember, onSave }) {
+  const [staffId, setStaffId] = useState('');
   const [name, setName] = useState('');
   const [mobile, setMobile] = useState('');
   const [joiningDate, setJoiningDate] = useState('');
@@ -33,6 +34,7 @@ export function StaffModal({ isOpen, onClose, staffMember, onSave }) {
 
   useEffect(() => {
     if (staffMember) {
+      setStaffId(staffMember.staffId || '');
       setName(staffMember.name || '');
       setMobile(staffMember.mobile || '');
       setJoiningDate(staffMember.joiningDate || new Date().toISOString().slice(0, 10));
@@ -42,6 +44,7 @@ export function StaffModal({ isOpen, onClose, staffMember, onSave }) {
       setDailyWage(staffMember.dailyWage || '');
       setDailyHours(staffMember.dailyHours || 8);
     } else {
+      setStaffId('');
       setName('');
       setMobile('');
       setJoiningDate(new Date().toISOString().slice(0, 10));
@@ -55,13 +58,14 @@ export function StaffModal({ isOpen, onClose, staffMember, onSave }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!name || !mobile || !joiningDate) {
+    if (!staffId || !name || !mobile || !joiningDate) {
       alert('Please fill all required fields');
       return;
     }
 
     const record = {
       ...(staffMember?.id && { id: staffMember.id }),
+      staffId,
       name,
       mobile,
       joiningDate,
@@ -91,6 +95,18 @@ export function StaffModal({ isOpen, onClose, staffMember, onSave }) {
         <div className="modal-body">
           <div className="form-row">
             <div className="form-group">
+              <label className="form-label">Staff ID *</label>
+              <input 
+                type="text" 
+                className="form-control" 
+                placeholder="e.g. STF-001"
+                value={staffId}
+                onChange={e => setStaffId(e.target.value)}
+                disabled={!!staffMember}
+                required
+              />
+            </div>
+            <div className="form-group">
               <label className="form-label">Full Name *</label>
               <input 
                 type="text" 
@@ -101,6 +117,9 @@ export function StaffModal({ isOpen, onClose, staffMember, onSave }) {
                 required
               />
             </div>
+          </div>
+          
+          <div className="form-row">
             <div className="form-group">
               <label className="form-label">Mobile Number *</label>
               <input 
@@ -112,9 +131,6 @@ export function StaffModal({ isOpen, onClose, staffMember, onSave }) {
                 required
               />
             </div>
-          </div>
-          
-          <div className="form-row">
             <div className="form-group">
               <label className="form-label">Joining Date *</label>
               <input 
@@ -125,6 +141,9 @@ export function StaffModal({ isOpen, onClose, staffMember, onSave }) {
                 required
               />
             </div>
+          </div>
+
+          <div className="form-row">
             <div className="form-group">
               <label className="form-label">Salary Type *</label>
               <select 
@@ -136,53 +155,49 @@ export function StaffModal({ isOpen, onClose, staffMember, onSave }) {
                 <option value="daily">Daily Wage</option>
               </select>
             </div>
+            <div className="form-group">
+              {salaryType === 'monthly' ? (
+                <>
+                  <label className="form-label">Monthly Salary (₹) *</label>
+                  <input 
+                    type="number" 
+                    className="form-control" 
+                    placeholder="e.g. 25000"
+                    value={monthlySalary}
+                    onChange={e => setMonthlySalary(e.target.value)}
+                    required
+                  />
+                </>
+              ) : (
+                <>
+                  <label className="form-label">Daily Wage (₹) *</label>
+                  <input 
+                    type="number" 
+                    className="form-control" 
+                    placeholder="e.g. 600"
+                    value={dailyWage}
+                    onChange={e => setDailyWage(e.target.value)}
+                    required
+                  />
+                </>
+              )}
+            </div>
           </div>
 
-          {salaryType === 'monthly' ? (
-            <div className="form-row">
-              <div className="form-group">
-                <label className="form-label">Monthly Salary (₹) *</label>
-                <input 
-                  type="number" 
-                  className="form-control" 
-                  placeholder="e.g. 25000"
-                  value={monthlySalary}
-                  onChange={e => setMonthlySalary(e.target.value)}
-                />
-              </div>
-              <div className="form-group">
-                <label class="form-label">Standard Daily Hours</label>
-                <input 
-                  type="number" 
-                  className="form-control" 
-                  value={monthlyHours}
-                  onChange={e => setMonthlyHours(e.target.value)}
-                />
-              </div>
+          <div className="form-row">
+            <div className="form-group">
+              <label className="form-label">Standard Daily Hours</label>
+              <input 
+                type="number" 
+                className="form-control" 
+                value={salaryType === 'monthly' ? monthlyHours : dailyHours}
+                onChange={e => salaryType === 'monthly' ? setMonthlyHours(e.target.value) : setDailyHours(e.target.value)}
+              />
             </div>
-          ) : (
-            <div className="form-row">
-              <div className="form-group">
-                <label className="form-label">Daily Wage (₹) *</label>
-                <input 
-                  type="number" 
-                  className="form-control" 
-                  placeholder="e.g. 600"
-                  value={dailyWage}
-                  onChange={e => setDailyWage(e.target.value)}
-                />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Standard Daily Hours</label>
-                <input 
-                  type="number" 
-                  className="form-control" 
-                  value={dailyHours}
-                  onChange={e => setDailyHours(e.target.value)}
-                />
-              </div>
+            <div className="form-group">
+              {/* Empty group for 2-column layout alignment */}
             </div>
-          )}
+          </div>
         </div>
         <div className="modal-footer">
           <button type="button" className="btn btn-outline" onClick={onClose}>Cancel</button>
