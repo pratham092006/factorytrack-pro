@@ -488,7 +488,7 @@ export default function App() {
   };
 
   const handleClearData = async () => {
-    if (window.confirm('⚠️ CRITICAL WARNING: You are about to erase all records. This deletes everything from database. Continue?')) {
+    if (window.confirm('CRITICAL WARNING: You are about to erase all records. This deletes everything from database. Continue?')) {
       if (window.confirm('Confirming second time: erase database contents?')) {
         setLoading(true);
         try {
