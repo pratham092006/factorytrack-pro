@@ -31,7 +31,8 @@ const auth = async (req, res, next) => {
     }
 
     // Verify token with Supabase
-    const { data: { user }, error } = await supabase.auth.getUser(token);
+    const { data, error } = await supabase.auth.getUser(token);
+    const user = data?.user;
 
     if (error || !user) {
       return res.status(401).json({

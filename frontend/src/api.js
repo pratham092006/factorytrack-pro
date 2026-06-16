@@ -57,6 +57,7 @@ function mapStaffToFrontend(s) {
     dailyWage: Number(s.daily_wage || 0),
     monthlySalary: Number(s.monthly_salary || 0),
     status: s.status,
+    joiningDate: s.joining_date || (s.created_at ? s.created_at.slice(0, 10) : ''),
     createdAt: s.created_at,
     updatedAt: s.updated_at
   };

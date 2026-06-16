@@ -38,6 +38,21 @@ router.post('/register', async (req, res) => {
 
     // Create user with Supabase Auth
     const email = `${username}@${factory}.factorytrack.local`;
+
+    // Check if user already exists in database
+    const { data: existingUser, error: checkError } = await supabase
+      .from('users')
+      .select('id')
+      .eq('email', email)
+      .maybeSingle();
+
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: 'A user with this username and factory already exists.'
+      });
+    }
+
     const { data, error } = await supabase.auth.signUp({
       email: email,
       password: password,
@@ -56,12 +71,20 @@ router.post('/register', async (req, res) => {
       });
     }
 
+    const userId = data?.user?.id || data?.session?.user?.id;
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Registration succeeded in auth provider but failed to return user data.'
+      });
+    }
+
     // Also store user info in users table
     const { error: dbError } = await supabase
       .from('users')
       .insert([
         {
-          id: data.user.id,
+          id: userId,
           factory: factory,
           username: username,
           email: email,
@@ -77,7 +100,7 @@ router.post('/register', async (req, res) => {
       success: true,
       message: 'User registered successfully',
       user: {
-        id: data.user.id,
+        id: userId,
         factory: factory,
         username: username,
         email: email
@@ -140,11 +163,21 @@ router.post('/login', async (req, res) => {
       });
     }
 
+    const userId = data?.user?.id || data?.session?.user?.id;
+    const token = data?.session?.access_token;
+
+    if (!userId || !token) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid credentials or login session could not be established'
+      });
+    }
+
     res.json({
       success: true,
-      token: data.session.access_token,
+      token,
       user: {
-        id: data.user.id,
+        id: userId,
         factory: factory,
         username: username,
         email: email
@@ -192,7 +225,8 @@ router.get('/me', async (req, res) => {
     }
 
     // Verify token with Supabase
-    const { data: { user }, error } = await supabase.auth.getUser(token);
+    const { data, error } = await supabase.auth.getUser(token);
+    const user = data?.user;
 
     if (error || !user) {
       return res.status(401).json({
