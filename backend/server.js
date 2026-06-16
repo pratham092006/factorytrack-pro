@@ -15,10 +15,12 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static files from frontend/dist (compiled React app) or fallback to frontend
-const frontendPath = fs.existsSync(path.join(__dirname, '../frontend/dist'))
-  ? path.join(__dirname, '../frontend/dist')
-  : path.join(__dirname, '../frontend');
+// Serve static files from root dist, frontend/dist (compiled React app), or fallback to frontend
+const frontendPath = fs.existsSync(path.join(__dirname, '../dist'))
+  ? path.join(__dirname, '../dist')
+  : (fs.existsSync(path.join(__dirname, '../frontend/dist'))
+      ? path.join(__dirname, '../frontend/dist')
+      : path.join(__dirname, '../frontend'));
 
 app.use(express.static(frontendPath));
 
