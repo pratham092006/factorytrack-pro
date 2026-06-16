@@ -1,15 +1,15 @@
 const { createClient } = require('@supabase/supabase-js');
 require('dotenv').config();
 
-// Initialize Supabase client
+// Initialize Supabase client - Prefer service key for backend operations to bypass RLS checks
 const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_ANON_KEY;
+const supabaseKey = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_ANON_KEY;
 
 let supabase = null;
 
 if (!supabaseUrl || !supabaseKey) {
-  console.error('❌ Missing Supabase credentials in .env file');
-  console.log('💡 Please add SUPABASE_URL and SUPABASE_ANON_KEY to your .env file');
+  console.error('❌ Missing Supabase credentials in env');
+  console.log('💡 Please add SUPABASE_URL and SUPABASE_SERVICE_KEY/SUPABASE_ANON_KEY to environment variables');
 } else {
   try {
     supabase = createClient(supabaseUrl, supabaseKey);
