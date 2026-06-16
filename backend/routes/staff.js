@@ -304,8 +304,8 @@ router.post('/:id/attendance', async (req, res) => {
           staff_id: req.params.id,
           date,
           status,
-          in_time: inTime,
-          out_time: outTime,
+          in_time: inTime || null,
+          out_time: outTime || null,
           worked_hours: workedHours || 0,
           overtime_hours: overtimeHours || 0
         }
@@ -331,8 +331,8 @@ router.put('/attendance/:id', async (req, res) => {
       .from('attendance')
       .update({
         status,
-        in_time: inTime,
-        out_time: outTime,
+        in_time: inTime || null,
+        out_time: outTime || null,
         worked_hours: workedHours || 0,
         overtime_hours: overtimeHours || 0,
         updated_at: new Date().toISOString()
