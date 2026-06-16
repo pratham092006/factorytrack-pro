@@ -3,34 +3,52 @@ const path = require('path');
 const crypto = require('crypto');
 
 const DB_PATH = path.join(__dirname, 'db.json');
+const isVercel = process.env.VERCEL === '1';
 
-// Initialize local database JSON if not exists
-if (!fs.existsSync(DB_PATH)) {
-  fs.writeFileSync(DB_PATH, JSON.stringify({
-    users: [],
-    staff: [],
-    attendance: [],
-    advances: [],
-    savings: [],
-    payments: []
-  }, null, 2));
-}
+// In-memory fallback database for serverless environments
+let inMemoryDB = {
+  users: [],
+  staff: [],
+  attendance: [],
+  advances: [],
+  savings: [],
+  payments: []
+};
 
-function readDB() {
+// Initialize file database if not in Vercel
+if (!isVercel) {
   try {
-    const content = fs.readFileSync(DB_PATH, 'utf8');
-    return JSON.parse(content);
+    if (!fs.existsSync(DB_PATH)) {
+      fs.writeFileSync(DB_PATH, JSON.stringify(inMemoryDB, null, 2));
+    }
   } catch (err) {
-    console.error('Error reading JSON fallback database:', err);
-    return { users: [], staff: [], attendance: [], advances: [], savings: [], payments: [] };
+    console.warn('Failed to initialize local file DB, using in-memory mode:', err.message);
   }
 }
 
+function readDB() {
+  if (isVercel) return inMemoryDB;
+  try {
+    if (fs.existsSync(DB_PATH)) {
+      const content = fs.readFileSync(DB_PATH, 'utf8');
+      return JSON.parse(content);
+    }
+  } catch (err) {
+    console.error('Error reading JSON fallback database:', err);
+  }
+  return inMemoryDB;
+}
+
 function writeDB(data) {
+  if (isVercel) {
+    inMemoryDB = data;
+    return;
+  }
   try {
     fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2));
   } catch (err) {
     console.error('Error writing JSON fallback database:', err);
+    inMemoryDB = data; // Fall back to keeping it in memory
   }
 }
 
@@ -50,7 +68,7 @@ module.exports = {
       factory,
       username,
       email,
-      password, // Simple local verification password (plain/hash)
+      password,
       created_at: new Date().toISOString()
     };
     
@@ -69,7 +87,6 @@ module.exports = {
       throw new Error('Invalid credentials');
     }
     
-    // Return the user object and a dummy JWT token
     const dummyToken = Buffer.from(JSON.stringify({ id: user.id, username: user.username })).toString('base64');
     return { user, token: dummyToken };
   },
@@ -133,7 +150,6 @@ module.exports = {
   deleteStaff: async (userId, staffId) => {
     const db = readDB();
     db.staff = db.staff.filter(s => !(s.id === staffId && s.user_id === userId));
-    // Cascade delete transactions
     db.attendance = db.attendance.filter(a => a.staff_id !== staffId);
     db.advances = db.advances.filter(a => a.staff_id !== staffId);
     db.savings = db.savings.filter(s => s.staff_id !== staffId);
@@ -154,7 +170,6 @@ module.exports = {
 
   markAttendance: async (userId, staffId, record) => {
     const db = readDB();
-    // Delete existing attendance for this staff member on this date to update
     db.attendance = db.attendance.filter(a => !(a.staff_id === staffId && a.date === record.date));
     
     const newAtt = {
