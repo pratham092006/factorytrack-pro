@@ -96,15 +96,16 @@ app.use((req, res) => {
   res.sendFile(path.join(frontendPath, 'index.html'));
 });
 
-const PORT = process.env.PORT || 5001;
-
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`🌐 Main App: http://localhost:${PORT}`);
-  console.log(`🔧 API: http://localhost:${PORT}/api`);
-  console.log(`💾 Database: Supabase`);
-});
+if (!process.env.VERCEL) {
+  const PORT = process.env.PORT || 5001;
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`🌐 Main App: http://localhost:${PORT}`);
+    console.log(`🔧 API: http://localhost:${PORT}/api`);
+    console.log(`💾 Database: Supabase`);
+  });
+}
 
 module.exports = app;
 
