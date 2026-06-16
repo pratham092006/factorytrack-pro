@@ -78,7 +78,7 @@ export default function Sidebar({
               <div className="user-name">{currentUser?.username || 'Admin'}</div>
               <div className="user-role">Sign Out</div>
             </div>
-            <span className="material-symbols-outlined" style={{ fontSize: '20px', color: 'rgba(255,255,255,0.4)' }}>
+            <span className="material-symbols-outlined" style={{ fontSize: '20px', color: 'var(--text-muted)' }}>
               logout
             </span>
           </div>

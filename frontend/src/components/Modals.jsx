@@ -690,13 +690,24 @@ export function PaymentModal({ isOpen, onClose, staffMember, monthKey, monthLabe
 export function ProfileModal({ isOpen, onClose, staffMember, attendance, advances, savings, payments, onNavigate }) {
   if (!isOpen || !staffMember) return null;
 
-  const totalAdv = advances.reduce((sum, a) => sum + a.amount, 0);
-  const totalRepaid = advances.reduce((sum, a) => sum + (a.repaid || 0), 0);
-  const totalSav = savings.filter(s => s.type === 'deposit').reduce((sum, a) => sum + a.amount, 0) -
-                   savings.filter(s => s.type === 'withdraw').reduce((sum, a) => sum + a.amount, 0);
-  const totalPaid = payments.reduce((sum, p) => sum + p.amount, 0);
-  const presentDays = attendance.filter(a => a.status === 'present').length;
-  const absentDays = attendance.filter(a => a.status === 'absent').length;
+  // Filter records specifically for this employee
+  const staffAdvances = advances.filter(a => a.staffId === staffMember.id);
+  const staffSavings = savings.filter(s => s.staffId === staffMember.id);
+  const staffPayments = payments.filter(p => p.staffId === staffMember.id);
+  const staffAttendance = attendance.filter(a => a.staffId === staffMember.id);
+
+  const totalAdv = staffAdvances.reduce((sum, a) => sum + a.amount, 0);
+  const totalRepaid = staffAdvances.reduce((sum, a) => sum + (a.repaid || 0), 0);
+  const totalSav = staffSavings.filter(s => s.type === 'deposit').reduce((sum, a) => sum + a.amount, 0) -
+                   staffSavings.filter(s => s.type === 'withdraw').reduce((sum, a) => sum + a.amount, 0);
+  const totalPaid = staffPayments.reduce((sum, p) => sum + p.amount, 0);
+
+  const presentDays = staffAttendance.filter(a => a.status === 'present').length;
+  const absentDays = staffAttendance.filter(a => a.status === 'absent').length;
+  const halfDays = staffAttendance.filter(a => a.status === 'half-day' || a.status === 'halfday').length;
+  const leaveDays = staffAttendance.filter(a => a.status === 'leave').length;
+  const totalDaysMarked = staffAttendance.length;
+  const attendanceRate = totalDaysMarked > 0 ? Math.round((presentDays / totalDaysMarked) * 100) : 0;
 
   const fmtCurrency = (n) => `₹${Number(n || 0).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
   const fmtDate = (d) => {
@@ -705,69 +716,212 @@ export function ProfileModal({ isOpen, onClose, staffMember, attendance, advance
   };
 
   return (
-    <ModalWrapper isOpen={isOpen} onClose={onClose} title="Staff Profile Details">
-      <div className="profile-modal-banner">
-        <div className="user-avatar" style={{ width: '56px', height: '56px', fontSize: '22px' }}>
-          {staffMember.name[0].toUpperCase()}
+    <ModalWrapper isOpen={isOpen} onClose={onClose} title="Employee Profile Details">
+      <div className="modal-body" style={{ padding: '24px 28px' }}>
+        {/* Profile Card Header (Matching Caleb White Student Details Header) */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '24px', flexWrap: 'wrap' }}>
+          <div className="user-avatar" style={{ width: '64px', height: '64px', fontSize: '24px', background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%)' }}>
+            {staffMember.name[0].toUpperCase()}
+          </div>
+          <div style={{ flex: 1, minWidth: '200px' }}>
+            <h2 style={{ fontSize: '20px', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '4px', letterSpacing: '-0.4px' }}>{staffMember.name}</h2>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(110px, 1fr))', gap: '12px', marginTop: '8px' }}>
+              <div>
+                <div style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.8px', color: 'var(--text-muted)', fontWeight: 700 }}>Staff ID</div>
+                <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-primary)', marginTop: '2px' }}>{staffMember.staffId}</div>
+              </div>
+              <div>
+                <div style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.8px', color: 'var(--text-muted)', fontWeight: 700 }}>Mobile Number</div>
+                <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-primary)', marginTop: '2px' }}>{staffMember.mobile || '-'}</div>
+              </div>
+              <div>
+                <div style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.8px', color: 'var(--text-muted)', fontWeight: 700 }}>Joining Date</div>
+                <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-primary)', marginTop: '2px' }}>{fmtDate(staffMember.joiningDate)}</div>
+              </div>
+              <div>
+                <div style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.8px', color: 'var(--text-muted)', fontWeight: 700 }}>Salary Rate</div>
+                <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-primary)', marginTop: '2px' }}>
+                  {staffMember.salaryType === 'monthly' 
+                    ? `${fmtCurrency(staffMember.monthlySalary)}/mo` 
+                    : `${fmtCurrency(staffMember.dailyWage)}/day`}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div>
-          <h2 style={{ fontSize: '18px', fontWeight: 700 }}>{staffMember.name}</h2>
-          <div style={{ opacity: 0.8, fontSize: '13px' }}>{staffMember.staffId} · {staffMember.mobile}</div>
-          <span className="badge" style={{ background: 'rgba(255, 255, 255, 0.15)', color: 'white', marginTop: '6px', fontSize: '10px' }}>
-            {staffMember.salaryType === 'monthly' ? 'Monthly Payroll' : 'Daily Wages'}
-          </span>
-        </div>
-      </div>
 
-      <div className="modal-body">
-        <div className="grid-2" style={{ gap: '14px', marginBottom: '16px' }}>
-          <div className="info-item" style={{ display: 'flex', flexDirection: 'column' }}>
-            <label className="form-label">Joining Date</label>
-            <span style={{ fontSize: '14px', fontWeight: 600 }}>{fmtDate(staffMember.joiningDate)}</span>
+        {/* Row of Mini Stat Cards (Matching Oakridge reference image) */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '12px', marginBottom: '24px' }}>
+          {/* Total Attendance Card (Blue) */}
+          <div style={{ padding: '16px', background: 'hsl(214, 100%, 97%)', borderRadius: '16px', border: '1px solid hsl(214, 100%, 93%)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'hsl(214, 100%, 92%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'hsl(214, 100%, 45%)', flexShrink: 0 }}>
+              <span className="material-symbols-outlined" style={{ fontSize: '18px', fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+            </div>
+            <div>
+              <div style={{ fontSize: '16px', fontWeight: 800, color: 'hsl(214, 100%, 35%)', lineHeight: '1.2' }}>{presentDays} Days</div>
+              <div style={{ fontSize: '10px', color: 'hsl(214, 100%, 40%)', fontWeight: 600, marginTop: '2px' }}>Total Attendance</div>
+            </div>
           </div>
-          <div className="info-item" style={{ display: 'flex', flexDirection: 'column' }}>
-            <label className="form-label">Salary Rate</label>
-            <span style={{ fontSize: '14px', fontWeight: 600 }}>
-              {staffMember.salaryType === 'monthly' 
-                ? `${fmtCurrency(staffMember.monthlySalary)}/month` 
-                : `${fmtCurrency(staffMember.dailyWage)}/day`}
-            </span>
+
+          {/* Late Attendance Card (Green) */}
+          <div style={{ padding: '16px', background: 'hsl(142, 72%, 97%)', borderRadius: '16px', border: '1px solid hsl(142, 72%, 93%)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'hsl(142, 72%, 92%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'hsl(142, 72%, 35%)', flexShrink: 0 }}>
+              <span className="material-symbols-outlined" style={{ fontSize: '18px', fontVariationSettings: "'FILL' 1" }}>history</span>
+            </div>
+            <div>
+              <div style={{ fontSize: '16px', fontWeight: 800, color: 'hsl(142, 72%, 30%)', lineHeight: '1.2' }}>{halfDays} Days</div>
+              <div style={{ fontSize: '10px', color: 'hsl(142, 72%, 35%)', fontWeight: 600, marginTop: '2px' }}>Late Attendance</div>
+            </div>
           </div>
-          <div className="info-item" style={{ display: 'flex', flexDirection: 'column' }}>
-            <label className="form-label">Present Days</label>
-            <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--success)' }}>{presentDays} days</span>
+
+          {/* Undertime Attendance Card (Orange) */}
+          <div style={{ padding: '16px', background: 'hsl(38, 92%, 97%)', borderRadius: '16px', border: '1px solid hsl(38, 92%, 93%)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'hsl(38, 92%, 92%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'hsl(38, 92%, 40%)', flexShrink: 0 }}>
+              <span className="material-symbols-outlined" style={{ fontSize: '18px', fontVariationSettings: "'FILL' 1" }}>schedule</span>
+            </div>
+            <div>
+              <div style={{ fontSize: '16px', fontWeight: 800, color: 'hsl(38, 92%, 35%)', lineHeight: '1.2' }}>{leaveDays} Days</div>
+              <div style={{ fontSize: '10px', color: 'hsl(38, 92%, 40%)', fontWeight: 600, marginTop: '2px' }}>Undertime Attendance</div>
+            </div>
           </div>
-          <div className="info-item" style={{ display: 'flex', flexDirection: 'column' }}>
-            <label className="form-label">Absent Days</label>
-            <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--danger)' }}>{absentDays} days</span>
-          </div>
-          <div className="info-item" style={{ display: 'flex', flexDirection: 'column' }}>
-            <label className="form-label">Total Advances</label>
-            <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--warning)' }}>{fmtCurrency(totalAdv)}</span>
-          </div>
-          <div className="info-item" style={{ display: 'flex', flexDirection: 'column' }}>
-            <label className="form-label">Advance Balance</label>
-            <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--danger)' }}>{fmtCurrency(totalAdv - totalRepaid)}</span>
-          </div>
-          <div className="info-item" style={{ display: 'flex', flexDirection: 'column' }}>
-            <label className="form-label">Savings Balance</label>
-            <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--success)' }}>{fmtCurrency(totalSav)}</span>
-          </div>
-          <div className="info-item" style={{ display: 'flex', flexDirection: 'column' }}>
-            <label className="form-label">Total Salary Paid</label>
-            <span style={{ fontSize: '14px', fontWeight: 600 }}>{fmtCurrency(totalPaid)}</span>
+
+          {/* Absent Card (Red) */}
+          <div style={{ padding: '16px', background: 'hsl(350, 89%, 97%)', borderRadius: '16px', border: '1px solid hsl(350, 89%, 93%)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'hsl(350, 89%, 92%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'hsl(350, 89%, 48%)', flexShrink: 0 }}>
+              <span className="material-symbols-outlined" style={{ fontSize: '18px', fontVariationSettings: "'FILL' 1" }}>cancel</span>
+            </div>
+            <div>
+              <div style={{ fontSize: '16px', fontWeight: 800, color: 'hsl(350, 89%, 40%)', lineHeight: '1.2' }}>{absentDays} Days</div>
+              <div style={{ fontSize: '10px', color: 'hsl(350, 89%, 45%)', fontWeight: 600, marginTop: '2px' }}>Total Absent</div>
+            </div>
           </div>
         </div>
-        
-        <div style={{ height: '1px', background: 'var(--border)', margin: '16px 0' }}></div>
-        
-        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+
+        {/* Dual Column Layout: Left Column (Class Days & Attendance Rate) + Right Column (Summary Vertical Pills) */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px', marginBottom: '24px' }}>
+          {/* Left Column: Class Days & Attendance Rate & Trend Chart */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div style={{ background: '#FFFFFF', border: '1px solid var(--border)', borderRadius: '20px', padding: '20px', display: 'flex', flexDirection: 'column', gap: '8px', boxShadow: 'var(--shadow-sm)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <div style={{ fontSize: '14px', fontWeight: 800, color: 'var(--text-primary)' }}>Class Days</div>
+                  <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Class days for Monthly</div>
+                </div>
+                <div style={{ fontSize: '24px', fontWeight: 800, color: 'var(--text-primary)' }}>{totalDaysMarked} Days</div>
+              </div>
+            </div>
+
+            <div style={{ background: '#FFFFFF', border: '1px solid var(--border)', borderRadius: '20px', padding: '20px', display: 'flex', flexDirection: 'column', gap: '12px', boxShadow: 'var(--shadow-sm)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <div style={{ fontSize: '14px', fontWeight: 800, color: 'var(--text-primary)' }}>Attendance Rate</div>
+                  <div style={{ background: 'var(--primary-light)', color: 'var(--primary)', padding: '2px 8px', borderRadius: '20px', fontSize: '10px', fontWeight: 700, display: 'inline-block', marginTop: '4px' }}>This Year</div>
+                </div>
+                <div style={{ fontSize: '32px', fontWeight: 800, color: 'var(--text-primary)' }}>{attendanceRate}%</div>
+              </div>
+
+              {/* Monthly Trend Graphic (SVG Curve representing trend) */}
+              <div style={{ height: '70px', marginTop: '8px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: 'var(--text-muted)', marginBottom: '4px' }}>
+                  <span>January</span>
+                  <span>February</span>
+                  <span>March</span>
+                </div>
+                <div style={{ position: 'relative', height: '40px', width: '100%' }}>
+                  <svg viewBox="0 0 100 40" preserveAspectRatio="none" style={{ width: '100%', height: '100%' }}>
+                    <defs>
+                      <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="var(--primary)" stopOpacity="0.2"/>
+                        <stop offset="100%" stopColor="var(--primary)" stopOpacity="0.0"/>
+                      </linearGradient>
+                    </defs>
+                    <path d="M 0 32 Q 25 15 50 25 T 100 10" fill="none" stroke="var(--primary)" strokeWidth="2.5" />
+                    <path d="M 0 32 Q 25 15 50 25 T 100 10 L 100 40 L 0 40 Z" fill="url(#chartGrad)" />
+                    <circle cx="0" cy="32" r="3" fill="var(--primary)" />
+                    <circle cx="50" cy="25" r="3" fill="var(--primary)" />
+                    <circle cx="100" cy="10" r="3" fill="var(--primary)" />
+                  </svg>
+                  {/* Floating percentages like in the reference image */}
+                  <div style={{ position: 'absolute', left: '0%', bottom: '26px', transform: 'translateX(-50%)', background: '#3B82F6', color: '#FFFFFF', padding: '1px 4px', borderRadius: '4px', fontSize: '8px', fontWeight: 700 }}>57%</div>
+                  <div style={{ position: 'absolute', left: '50%', bottom: '32px', transform: 'translateX(-50%)', background: '#F59E0B', color: '#FFFFFF', padding: '1px 4px', borderRadius: '4px', fontSize: '8px', fontWeight: 700 }}>55%</div>
+                  <div style={{ position: 'absolute', left: '100%', bottom: '38px', transform: 'translateX(-100%)', background: '#10B981', color: '#FFFFFF', padding: '1px 4px', borderRadius: '4px', fontSize: '8px', fontWeight: 700 }}>{attendanceRate}%</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column: Summary - Employee Name (Oakridge Vertical Pills) */}
+          <div style={{ background: '#FFFFFF', border: '1px solid var(--border)', borderRadius: '20px', padding: '20px', boxShadow: 'var(--shadow-sm)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div style={{ fontSize: '15px', fontWeight: 800, color: 'var(--text-primary)' }}>Summary - {staffMember.name.split(' ')[0]}</div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px', height: '170px', alignItems: 'end' }}>
+              
+              {/* Attendance vertical pill (Blue) */}
+              <div className="vertical-pill blue">
+                <div className="vertical-pill-value">{presentDays}</div>
+                <div className="vertical-pill-bar" style={{ height: `${Math.min(100, Math.max(25, (presentDays / (totalDaysMarked || 1)) * 100))}%` }}>
+                  <span className="material-symbols-outlined vertical-pill-icon">person</span>
+                  <div className="vertical-pill-label">Att</div>
+                </div>
+              </div>
+
+              {/* Late vertical pill (Green) */}
+              <div className="vertical-pill green">
+                <div className="vertical-pill-value">{halfDays}</div>
+                <div className="vertical-pill-bar" style={{ height: `${Math.min(100, Math.max(25, (halfDays / (totalDaysMarked || 1)) * 100))}%` }}>
+                  <span className="material-symbols-outlined vertical-pill-icon">history</span>
+                  <div className="vertical-pill-label">Late</div>
+                </div>
+              </div>
+
+              {/* Undertime vertical pill (Orange) */}
+              <div className="vertical-pill orange">
+                <div className="vertical-pill-value">{leaveDays}</div>
+                <div className="vertical-pill-bar" style={{ height: `${Math.min(100, Math.max(25, (leaveDays / (totalDaysMarked || 1)) * 100))}%` }}>
+                  <span className="material-symbols-outlined vertical-pill-icon">schedule</span>
+                  <div className="vertical-pill-label">Under</div>
+                </div>
+              </div>
+
+              {/* Absent vertical pill (Red) */}
+              <div className="vertical-pill red">
+                <div className="vertical-pill-value">{absentDays}</div>
+                <div className="vertical-pill-bar" style={{ height: `${Math.min(100, Math.max(25, (absentDays / (totalDaysMarked || 1)) * 100))}%` }}>
+                  <span className="material-symbols-outlined vertical-pill-icon">cancel</span>
+                  <div className="vertical-pill-label">Abs</div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        {/* Financial Summary Card Row */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px', background: 'var(--bg-input)', padding: '18px', borderRadius: '16px', border: '1px solid var(--border)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
+            <span style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>Total Advances Given</span>
+            <strong style={{ color: 'var(--text-primary)' }}>{fmtCurrency(totalAdv)}</strong>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
+            <span style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>Advance Balance</span>
+            <strong style={{ color: totalAdv - totalRepaid > 0 ? 'var(--danger)' : 'var(--text-primary)' }}>{fmtCurrency(totalAdv - totalRepaid)}</strong>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
+            <span style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>Savings Balance</span>
+            <strong style={{ color: 'var(--success)' }}>{fmtCurrency(totalSav)}</strong>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
+            <span style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>Total Salary Paid</span>
+            <strong style={{ color: 'var(--text-primary)' }}>{fmtCurrency(totalPaid)}</strong>
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
           <button 
-            className="btn btn-sm btn-primary" 
+            className="btn btn-sm btn-outline" 
             onClick={() => { onClose(); onNavigate('attendance'); }}
           >
             <span className="material-symbols-outlined">fact_check</span>
-            View Attendance
+            Attendance
           </button>
           <button 
             className="btn btn-sm btn-outline" 
@@ -781,8 +935,9 @@ export function ProfileModal({ isOpen, onClose, staffMember, attendance, advance
             onClick={() => { onClose(); onNavigate('savings', staffMember.id); }}
           >
             <span className="material-symbols-outlined">savings</span>
-            Deposit/Withdraw Savings
+            Savings Ledger
           </button>
+          <button className="btn btn-sm btn-primary" onClick={onClose}>Close</button>
         </div>
       </div>
     </ModalWrapper>

@@ -35,11 +35,24 @@
   --text-muted: hsl(215.4, 16.3%, 55%);
   
   /* Backgrounds */
-  --bg: hsl(220, 38%, 97.5%); /* Premium pale-blue base background */
+  --bg: #F4F5F7; /* Soft blue-grey background */
   --bg-card: hsl(0, 0%, 100%);
-  --bg-sidebar: hsla(0, 0%, 100%, 0.8); /* Glassmorphic light sidebar */
-  --bg-sidebar-hover: hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.04);
   --bg-input: hsl(210, 40%, 98%);
+  
+  /* Sidebar styles (Oakridge theme) */
+  --bg-sidebar: #FFFFFF;
+  --border-sidebar: var(--border);
+  --text-sidebar-title: var(--text-primary);
+  --text-sidebar-subtitle: var(--text-secondary);
+  --text-sidebar-nav: var(--text-secondary);
+  --bg-sidebar-nav-hover: hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.05);
+  --text-sidebar-nav-hover: var(--primary);
+  --bg-sidebar-nav-active: var(--primary);
+  --text-sidebar-nav-active: #ffffff;
+  --border-user-card: var(--border);
+  --bg-user-card: var(--bg-input);
+  --text-user-name: var(--text-primary);
+  --text-user-role: var(--text-muted);
   
   /* Borders & Shadows */
   --border: hsl(214.3, 31.8%, 91.4%);
@@ -63,9 +76,22 @@
 [data-theme="dark"] {
   --bg: hsl(222.2, 47.4%, 5.9%); /* Deep rich midnight slate */
   --bg-card: hsl(222.2, 47.4%, 9.5%);
-  --bg-sidebar: hsla(222.2, 47.4%, 7.5%, 0.8);
-  --bg-sidebar-hover: hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.08);
   --bg-input: hsl(222.2, 47.4%, 13.5%);
+  
+  /* Sidebar styles (Dark) */
+  --bg-sidebar: hsl(222.2, 47.4%, 9.5%);
+  --border-sidebar: hsl(222.2, 30%, 18%);
+  --text-sidebar-title: hsl(210, 40%, 98%);
+  --text-sidebar-subtitle: hsl(199, 89%, 60%);
+  --text-sidebar-nav: hsl(215, 20%, 75%);
+  --bg-sidebar-nav-hover: rgba(255, 255, 255, 0.06);
+  --text-sidebar-nav-hover: #ffffff;
+  --bg-sidebar-nav-active: linear-gradient(135deg, hsl(221, 83%, 53%) 0%, hsl(221, 83%, 45%) 100%);
+  --text-sidebar-nav-active: #ffffff;
+  --border-user-card: rgba(255, 255, 255, 0.05);
+  --bg-user-card: rgba(255, 255, 255, 0.02);
+  --text-user-name: hsl(210, 40%, 98%);
+  --text-user-role: hsl(215, 20%, 65%);
   
   --text-primary: hsl(210, 40%, 98%);
   --text-secondary: hsl(215, 20.2%, 75.1%);
@@ -137,7 +163,7 @@ button, input, select, textarea {
 /* ===== SIDEBAR ===== */
 .sidebar {
   width: var(--sidebar-width);
-  background: linear-gradient(180deg, hsl(222, 47%, 9%) 0%, hsl(224, 35%, 15%) 100%);
+  background: var(--bg-sidebar);
   display: flex;
   flex-direction: column;
   position: fixed;
@@ -147,12 +173,12 @@ button, input, select, textarea {
   z-index: 100;
   transition: var(--transition-slow), transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   overflow-y: auto;
-  border-right: 1px solid hsl(222, 30%, 16%);
+  border-right: 1px solid var(--border-sidebar);
 }
 
 .sidebar-header {
   padding: 24px 20px;
-  border-bottom: 1px solid hsl(222, 30%, 16%);
+  border-bottom: 1px solid var(--border-sidebar);
   display: flex;
   align-items: center;
   gap: 12px;
@@ -185,14 +211,14 @@ button, input, select, textarea {
 .sidebar-title {
   font-size: 15px;
   font-weight: 800;
-  color: hsl(210, 40%, 98%);
+  color: var(--text-sidebar-title);
   line-height: 1.25;
   letter-spacing: -0.3px;
 }
 
 .sidebar-subtitle {
   font-size: 9px;
-  color: hsl(199, 89%, 60%);
+  color: var(--text-sidebar-subtitle);
   text-transform: uppercase;
   letter-spacing: 1.2px;
   margin-top: 1px;
@@ -218,10 +244,10 @@ button, input, select, textarea {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 14px;
-  border-radius: 10px;
+  padding: 11px 18px;
+  border-radius: 9999px;
   cursor: pointer;
-  color: hsl(215, 20%, 75%);
+  color: var(--text-sidebar-nav);
   transition: var(--transition);
   margin-bottom: 4px;
   font-size: 13px;
@@ -232,28 +258,20 @@ button, input, select, textarea {
 }
 
 .nav-item:hover {
-  background: rgba(255, 255, 255, 0.06);
-  color: hsl(0, 0%, 100%);
+  background: var(--bg-sidebar-nav-hover);
+  color: var(--text-sidebar-nav-hover);
   transform: translateX(4px);
 }
 
 .nav-item.active {
-  background: linear-gradient(135deg, hsl(221, 83%, 53%) 0%, hsl(221, 83%, 45%) 100%);
-  color: hsl(0, 0%, 100%);
+  background: var(--bg-sidebar-nav-active);
+  color: var(--text-sidebar-nav-active);
   font-weight: 700;
-  border-color: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+  box-shadow: 0 4px 12px hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.2);
 }
 
 .nav-item.active::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 25%;
-  height: 50%;
-  width: 3px;
-  background: hsl(199, 89%, 60%);
-  border-radius: 0 4px 4px 0;
+  display: none;
 }
 
 .nav-item .material-symbols-outlined {
@@ -268,7 +286,7 @@ button, input, select, textarea {
 
 .sidebar-footer {
   padding: 16px 14px;
-  border-top: 1px solid hsl(222, 30%, 16%);
+  border-top: 1px solid var(--border-sidebar);
 }
 
 .user-card {
@@ -279,14 +297,14 @@ button, input, select, textarea {
   border-radius: 12px;
   cursor: pointer;
   transition: var(--transition);
-  color: hsl(210, 40%, 98%);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  background: rgba(255, 255, 255, 0.02);
+  color: var(--text-user-name);
+  border: 1px solid var(--border-user-card);
+  background: var(--bg-user-card);
 }
 
 .user-card:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.12);
+  background: var(--bg-sidebar-nav-hover);
+  border-color: var(--primary);
   transform: translateY(-1px);
 }
 
@@ -313,7 +331,7 @@ button, input, select, textarea {
 .user-name {
   font-size: 13px;
   font-weight: 700;
-  color: hsl(210, 40%, 98%);
+  color: var(--text-user-name);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -321,7 +339,7 @@ button, input, select, textarea {
 
 .user-role {
   font-size: 11px;
-  color: hsl(215, 20%, 65%);
+  color: var(--text-user-role);
   font-weight: 600;
 }
 
@@ -690,7 +708,7 @@ select.form-control {
   padding-left: 42px;
   min-width: 280px;
   background: var(--bg-input);
-  border-radius: 12px;
+  border-radius: 9999px;
   transition: var(--transition);
 }
 
@@ -1722,4 +1740,219 @@ tbody tr:last-child td {
     width: 100%;
     justify-content: space-around;
   }
+}
+
+/* ===== ATTENDANCE PILLS (Oakridge summary capsule cards) ===== */
+.attendance-pills-container {
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  height: 240px;
+  padding: 10px 0;
+}
+
+.att-pill {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  border-radius: 20px;
+  overflow: hidden;
+  height: 100%;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+  border: 1px solid transparent;
+}
+
+.att-pill:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.att-pill-top {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.att-pill-top .val {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -1.2px;
+  margin-bottom: 4px;
+}
+
+.att-pill-top .lbl {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  opacity: 0.7;
+}
+
+.att-pill-bottom {
+  height: 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: white;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.att-pill-bottom .material-symbols-outlined {
+  font-size: 18px;
+  font-variation-settings: 'FILL' 1;
+}
+
+/* Blue Pill (Present) */
+.att-pill.blue {
+  background: hsl(214, 100%, 97%);
+  border-color: hsl(214, 100%, 93%);
+}
+.att-pill.blue .att-pill-top {
+  color: hsl(214, 100%, 35%);
+}
+.att-pill.blue .att-pill-bottom {
+  background: hsl(214, 100%, 48%);
+}
+
+/* Red Pill (Absent) */
+.att-pill.red {
+  background: hsl(350, 89%, 97%);
+  border-color: hsl(350, 89%, 93%);
+}
+.att-pill.red .att-pill-top {
+  color: hsl(350, 89%, 45%);
+}
+.att-pill.red .att-pill-bottom {
+  background: hsl(350, 89%, 60%);
+}
+
+/* Orange Pill (Unmarked) */
+.att-pill.orange {
+  background: hsl(38, 92%, 97%);
+  border-color: hsl(38, 92%, 93%);
+}
+.att-pill.orange .att-pill-top {
+  color: hsl(38, 92%, 40%);
+}
+.att-pill.orange .att-pill-bottom {
+  background: hsl(38, 92%, 50%);
+}
+
+/* Dark theme support for pills */
+[data-theme="dark"] .att-pill.blue {
+  background: hsl(214, 50%, 12%);
+  border-color: hsl(214, 50%, 16%);
+}
+[data-theme="dark"] .att-pill.blue .att-pill-top {
+  color: hsl(214, 100%, 80%);
+}
+[data-theme="dark"] .att-pill.red {
+  background: hsl(350, 50%, 12%);
+  border-color: hsl(350, 50%, 16%);
+}
+[data-theme="dark"] .att-pill.red .att-pill-top {
+  color: hsl(350, 100%, 80%);
+}
+[data-theme="dark"] .att-pill.orange {
+  background: hsl(38, 50%, 12%);
+  border-color: hsl(38, 50%, 16%);
+}
+[data-theme="dark"] .att-pill.orange .att-pill-top {
+  color: hsl(38, 100%, 80%);
+}
+
+/* ===== OAKRIDGE VERTICAL PILL CARDS ===== */
+.vertical-pill {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: flex-end;
+  align-items: center;
+  position: relative;
+  text-align: center;
+}
+
+.vertical-pill-value {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.vertical-pill-bar {
+  width: 100%;
+  border-radius: 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 12px 4px;
+  min-height: 50px;
+  transition: height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.vertical-pill.blue .vertical-pill-bar {
+  background: hsl(214, 100%, 50%);
+  color: #FFFFFF;
+}
+
+.vertical-pill.green .vertical-pill-bar {
+  background: hsl(142, 72%, 45%);
+  color: #FFFFFF;
+}
+
+.vertical-pill.orange .vertical-pill-bar {
+  background: hsl(38, 92%, 50%);
+  color: #FFFFFF;
+}
+
+.vertical-pill.red .vertical-pill-bar {
+  background: hsl(350, 89%, 60%);
+  color: #FFFFFF;
+}
+
+.vertical-pill-icon {
+  font-size: 16px;
+  margin-bottom: 4px;
+  font-variation-settings: 'FILL' 1;
+}
+
+.vertical-pill-label {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.95;
+}
+
+/* Dark theme support for vertical pills */
+[data-theme="dark"] .vertical-pill-bar {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .vertical-pill.blue .vertical-pill-bar {
+  background: hsl(214, 100%, 40%);
+}
+
+[data-theme="dark"] .vertical-pill.green .vertical-pill-bar {
+  background: hsl(142, 72%, 35%);
+}
+
+[data-theme="dark"] .vertical-pill.orange .vertical-pill-bar {
+  background: hsl(38, 92%, 40%);
+}
+
+[data-theme="dark"] .vertical-pill.red .vertical-pill-bar {
+  background: hsl(350, 89%, 50%);
 }
