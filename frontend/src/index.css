@@ -1464,7 +1464,6 @@ tbody tr:last-child td {
 }
 
 /* ===== PRINT / HIDDEN ===== */
-.no-print { }
 @media print {
   .no-print, .sidebar, .header, .filter-bar, .header-actions, .pagination, .btn {
     display: none !important;
