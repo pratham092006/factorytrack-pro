@@ -30,7 +30,7 @@ async function testSupabaseConnection() {
     if (!supabase) {
       return false;
     }
-    const { data, error } = await supabase.from('users').select('count').limit(1);
+    const { data, error } = await supabase.from('users').select('id').limit(1);
     if (error && error.code !== 'PGRST116') { // PGRST116 = no rows, which is fine
       console.error('❌ Supabase connection error:', error.message);
       console.log('💡 Please check your SUPABASE_URL and SUPABASE_ANON_KEY in .env');
