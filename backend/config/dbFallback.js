@@ -52,11 +52,18 @@ function writeDB(data) {
   }
 }
 
+// Helper to construct a valid and unique email address from username and factory
+function getSafeEmail(username, factory) {
+  const cleanUsername = username.toLowerCase().replace(/[^a-z0-9._+-]/g, '-');
+  const cleanFactory = factory.toLowerCase().replace(/[^a-z0-9.-]/g, '-');
+  return `${cleanUsername}@${cleanFactory}.factorytrack.local`;
+}
+
 module.exports = {
   // Auth operations
   registerUser: async (factory, username, password) => {
     const db = readDB();
-    const email = `${username}@${factory}.factorytrack.local`;
+    const email = getSafeEmail(username, factory);
     
     // Check if email already exists
     if (db.users.some(u => u.email === email)) {
@@ -80,7 +87,7 @@ module.exports = {
 
   loginUser: async (factory, username, password) => {
     const db = readDB();
-    const email = `${username}@${factory}.factorytrack.local`;
+    const email = getSafeEmail(username, factory);
     const user = db.users.find(u => u.email === email && u.password === password);
     
     if (!user) {

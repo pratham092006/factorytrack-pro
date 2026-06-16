@@ -158,7 +158,7 @@ router.get('/', async (req, res) => {
     res.json({ success: true, staff: data || [] });
   } catch (error) {
     console.error('Error fetching staff:', error);
-    res.status(500).json({ success: false, message: 'Error fetching staff' });
+    res.status(500).json({ success: false, message: error.message || 'Error fetching staff' });
   }
 });
 
@@ -181,7 +181,7 @@ router.get('/:id', async (req, res) => {
     res.json({ success: true, staff: data });
   } catch (error) {
     console.error('Error fetching staff:', error);
-    res.status(500).json({ success: false, message: 'Error fetching staff' });
+    res.status(500).json({ success: false, message: error.message || 'Error fetching staff' });
   }
 });
 
@@ -212,7 +212,7 @@ router.post('/', async (req, res) => {
     res.status(201).json({ success: true, staff: data });
   } catch (error) {
     console.error('Error adding staff:', error);
-    res.status(500).json({ success: false, message: 'Error adding staff' });
+    res.status(500).json({ success: false, message: error.message || 'Error adding staff' });
   }
 });
 
@@ -242,7 +242,7 @@ router.put('/:id', async (req, res) => {
     res.json({ success: true, staff: data });
   } catch (error) {
     console.error('Error updating staff:', error);
-    res.status(500).json({ success: false, message: 'Error updating staff' });
+    res.status(500).json({ success: false, message: error.message || 'Error updating staff' });
   }
 });
 
@@ -260,7 +260,7 @@ router.delete('/:id', async (req, res) => {
     res.json({ success: true, message: 'Staff deleted successfully' });
   } catch (error) {
     console.error('Error deleting staff:', error);
-    res.status(500).json({ success: false, message: 'Error deleting staff' });
+    res.status(500).json({ success: false, message: error.message || 'Error deleting staff' });
   }
 });
 

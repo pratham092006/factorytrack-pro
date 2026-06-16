@@ -67,7 +67,8 @@ app.get('/api/health', async (req, res) => {
     database: isConnected ? 'Connected' : 'Disconnected',
     supabase: {
       url: process.env.SUPABASE_URL ? 'Configured' : 'Missing',
-      key: process.env.SUPABASE_ANON_KEY ? 'Configured' : 'Missing'
+      anonKey: process.env.SUPABASE_ANON_KEY ? 'Configured' : 'Missing',
+      serviceKey: process.env.SUPABASE_SERVICE_KEY ? 'Configured' : 'Missing'
     }
   });
 });

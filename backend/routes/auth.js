@@ -3,6 +3,13 @@ const router = express.Router();
 const supabase = require('../config/supabase');
 const dbFallback = require('../config/dbFallback');
 
+// Helper to construct a valid and unique email address from username and factory
+function getSafeEmail(username, factory) {
+  const cleanUsername = username.toLowerCase().replace(/[^a-z0-9._+-]/g, '-');
+  const cleanFactory = factory.toLowerCase().replace(/[^a-z0-9.-]/g, '-');
+  return `${cleanUsername}@${cleanFactory}.factorytrack.local`;
+}
+
 // Register new user
 router.post('/register', async (req, res) => {
   try {
@@ -38,7 +45,7 @@ router.post('/register', async (req, res) => {
     }
 
     // Create user with Supabase Auth
-    const email = `${username}@${factory}.factorytrack.local`;
+    const email = getSafeEmail(username, factory);
 
     // Check if user already exists in database
     const { data: existingUser, error: checkError } = await supabase
@@ -129,7 +136,7 @@ router.post('/login', async (req, res) => {
       });
     }
 
-    const email = `${username}@${factory}.factorytrack.local`;
+    const email = getSafeEmail(username, factory);
 
     if (global.useLocalDB) {
       try {
