@@ -47,6 +47,7 @@ export default function App() {
   // Authentication State
   const [currentUser, setCurrentUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
+  const [dbType, setDbType] = useState(null); // 'supabase' or 'local'
 
   // App Settings State (Loaded from LocalStorage)
   const [settings, setSettings] = useState(() => {
@@ -97,6 +98,7 @@ export default function App() {
           const userRes = await getCurrentUser();
           if (userRes && userRes.success) {
             setCurrentUser(userRes.user);
+            setDbType(userRes.database || 'supabase');
           }
         }
       } catch (err) {
@@ -113,6 +115,7 @@ export default function App() {
   useEffect(() => {
     const handleUnauthorized = () => {
       setCurrentUser(null);
+      setDbType(null);
       setStaff([]);
       setAttendance([]);
       setAdvances([]);
@@ -165,8 +168,9 @@ export default function App() {
     }
   };
 
-  const handleLoginSuccess = (user) => {
+  const handleLoginSuccess = (user, database) => {
     setCurrentUser(user);
+    setDbType(database || 'supabase');
     showToast(`Welcome back, ${user.username}!`);
   };
 
@@ -175,6 +179,7 @@ export default function App() {
       try {
         await logoutUser();
         setCurrentUser(null);
+        setDbType(null);
         setStaff([]);
         setAttendance([]);
         setAdvances([]);
@@ -690,6 +695,25 @@ export default function App() {
 
       {/* Main Workspace Area */}
       <div className="main-content">
+        {dbType === 'local' && (
+          <div style={{
+            background: 'hsl(38, 92%, 50%)',
+            color: '#fff',
+            padding: '10px 16px',
+            fontSize: '13px',
+            fontWeight: 600,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+            zIndex: 10
+          }}>
+            <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>warning</span>
+            <span>
+              <strong>Local Database Fallback Active.</strong> Your changes are temporary and will be lost on server refresh. Please configure <code>SUPABASE_URL</code> and <code>SUPABASE_ANON_KEY</code> in Vercel and redeploy.
+            </span>
+          </div>
+        )}
         <Header
           activePage={activePage}
           darkMode={darkMode}

@@ -32,7 +32,7 @@ export default function Auth({ onLoginSuccess }) {
     try {
       const data = await loginUser(loginFactory, loginUserVal, loginPass);
       if (data.success) {
-        onLoginSuccess(data.user, data.token);
+        onLoginSuccess(data.user, data.database);
       } else {
         setErrorMsg(data.message || 'Login failed.');
       }

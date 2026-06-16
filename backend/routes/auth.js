@@ -20,6 +20,7 @@ router.post('/register', async (req, res) => {
         const user = await dbFallback.registerUser(factory, username, password);
         return res.status(201).json({
           success: true,
+          database: 'local',
           message: 'User registered successfully (Local Fallback DB)',
           user: {
             id: user.id,
@@ -98,6 +99,7 @@ router.post('/register', async (req, res) => {
 
     res.status(201).json({
       success: true,
+      database: 'supabase',
       message: 'User registered successfully',
       user: {
         id: userId,
@@ -134,6 +136,7 @@ router.post('/login', async (req, res) => {
         const { user, token } = await dbFallback.loginUser(factory, username, password);
         return res.json({
           success: true,
+          database: 'local',
           token,
           user: {
             id: user.id,
@@ -175,6 +178,7 @@ router.post('/login', async (req, res) => {
 
     res.json({
       success: true,
+      database: 'supabase',
       token,
       user: {
         id: userId,
@@ -209,6 +213,7 @@ router.get('/me', async (req, res) => {
         const user = await dbFallback.getUserByToken(token);
         return res.json({
           success: true,
+          database: 'local',
           user: {
             id: user.id,
             factory: user.factory,
@@ -248,6 +253,7 @@ router.get('/me', async (req, res) => {
 
     res.json({
       success: true,
+      database: 'supabase',
       user: {
         id: user.id,
         factory: userData?.factory || user.user_metadata?.factory,
