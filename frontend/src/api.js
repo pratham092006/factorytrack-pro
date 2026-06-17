@@ -200,10 +200,10 @@ function mapPaymentToBackend(p) {
 /* ==========================================
    AUTH API
    ========================================== */
-export async function loginUser(factory, username, password) {
+export async function loginUser(email, password) {
   const data = await apiCall('/auth/login', {
     method: 'POST',
-    body: JSON.stringify({ factory, username, password })
+    body: JSON.stringify({ email, password })
   });
   if (data.token) {
     setAuthToken(data.token);
@@ -211,10 +211,10 @@ export async function loginUser(factory, username, password) {
   return data;
 }
 
-export async function registerUser(factory, username, password) {
+export async function registerUser(factory, username, email, password) {
   const data = await apiCall('/auth/register', {
     method: 'POST',
-    body: JSON.stringify({ factory, username, password })
+    body: JSON.stringify({ factory, username, email, password })
   });
   return data;
 }

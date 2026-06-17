@@ -3,28 +3,23 @@ const router = express.Router();
 const supabase = require('../config/supabase');
 const dbFallback = require('../config/dbFallback');
 
-// Helper to construct a valid and unique email address from username and factory
-function getSafeEmail(username, factory) {
-  const cleanUsername = username.toLowerCase().replace(/[^a-z0-9._+-]/g, '-');
-  const cleanFactory = factory.toLowerCase().replace(/[^a-z0-9.-]/g, '-');
-  return `${cleanUsername}@${cleanFactory}.factorytrack.local`;
-}
-
 // Register new user
 router.post('/register', async (req, res) => {
   try {
-    const { factory, username, password } = req.body;
+    const { factory, username, email, password } = req.body;
 
-    if (!factory || !username || !password) {
+    if (!factory || !username || !email || !password) {
       return res.status(400).json({
         success: false,
-        message: 'Factory, username, and password are required'
+        message: 'Factory, username, email, and password are required'
       });
     }
 
+    const cleanEmail = email.toLowerCase().trim();
+
     if (global.useLocalDB) {
       try {
-        const user = await dbFallback.registerUser(factory, username, password);
+        const user = await dbFallback.registerUser(cleanEmail, password, username, factory);
         return res.status(201).json({
           success: true,
           database: 'local',
@@ -44,25 +39,22 @@ router.post('/register', async (req, res) => {
       }
     }
 
-    // Create user with Supabase Auth
-    const email = getSafeEmail(username, factory);
-
     // Check if user already exists in database
     const { data: existingUser, error: checkError } = await supabase
       .from('users')
       .select('id')
-      .eq('email', email)
+      .eq('email', cleanEmail)
       .maybeSingle();
 
     if (existingUser) {
       return res.status(400).json({
         success: false,
-        message: 'A user with this username and factory already exists.'
+        message: 'A user with this email address already exists.'
       });
     }
 
     const { data, error } = await supabase.auth.signUp({
-      email: email,
+      email: cleanEmail,
       password: password,
       options: {
         data: {
@@ -95,7 +87,7 @@ router.post('/register', async (req, res) => {
           id: userId,
           factory: factory,
           username: username,
-          email: email,
+          email: cleanEmail,
           created_at: new Date().toISOString()
         }
       ]);
@@ -112,7 +104,7 @@ router.post('/register', async (req, res) => {
         id: userId,
         factory: factory,
         username: username,
-        email: email
+        email: cleanEmail
       }
     });
   } catch (error) {
@@ -127,20 +119,20 @@ router.post('/register', async (req, res) => {
 // Login user
 router.post('/login', async (req, res) => {
   try {
-    const { factory, username, password } = req.body;
+    const { email, password } = req.body;
 
-    if (!factory || !username || !password) {
+    if (!email || !password) {
       return res.status(400).json({
         success: false,
-        message: 'Factory, username, and password are required'
+        message: 'Email and password are required'
       });
     }
 
-    const email = getSafeEmail(username, factory);
+    const cleanEmail = email.toLowerCase().trim();
 
     if (global.useLocalDB) {
       try {
-        const { user, token } = await dbFallback.loginUser(factory, username, password);
+        const { user, token } = await dbFallback.loginUser(cleanEmail, password);
         return res.json({
           success: true,
           database: 'local',
@@ -162,7 +154,7 @@ router.post('/login', async (req, res) => {
 
     // Sign in with Supabase Auth
     const { data, error } = await supabase.auth.signInWithPassword({
-      email: email,
+      email: cleanEmail,
       password: password
     });
 
@@ -183,15 +175,26 @@ router.post('/login', async (req, res) => {
       });
     }
 
+    // Fetch user details from database to return original factory name and username
+    const { data: userData, error: dbError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', userId)
+      .single();
+
+    if (dbError) {
+      console.error('Error fetching user info after login:', dbError);
+    }
+
     res.json({
       success: true,
       database: 'supabase',
       token,
       user: {
         id: userId,
-        factory: factory,
-        username: username,
-        email: email
+        factory: userData?.factory || data?.user?.user_metadata?.factory || 'FactoryTrack Pro',
+        username: userData?.username || data?.user?.user_metadata?.username || 'User',
+        email: cleanEmail
       }
     });
   } catch (error) {

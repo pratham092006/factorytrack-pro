@@ -5,13 +5,13 @@ export default function Auth({ onLoginSuccess }) {
   const [tab, setTab] = useState('login');
   
   // Login fields
-  const [loginFactory, setLoginFactory] = useState('');
-  const [loginUserVal, setLoginUserVal] = useState('');
+  const [loginEmail, setLoginEmail] = useState('');
   const [loginPass, setLoginPass] = useState('');
   
   // Register fields
   const [regFactory, setRegFactory] = useState('');
   const [regUserVal, setRegUserVal] = useState('');
+  const [regEmail, setRegEmail] = useState('');
   const [regPass, setRegPass] = useState('');
   
   const [errorMsg, setErrorMsg] = useState('');
@@ -20,7 +20,7 @@ export default function Auth({ onLoginSuccess }) {
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
-    if (!loginFactory || !loginUserVal || !loginPass) {
+    if (!loginEmail || !loginPass) {
       setErrorMsg('Please fill all fields.');
       return;
     }
@@ -30,7 +30,7 @@ export default function Auth({ onLoginSuccess }) {
     setLoading(true);
     
     try {
-      const data = await loginUser(loginFactory, loginUserVal, loginPass);
+      const data = await loginUser(loginEmail, loginPass);
       if (data.success) {
         onLoginSuccess(data.user, data.database);
       } else {
@@ -45,7 +45,7 @@ export default function Auth({ onLoginSuccess }) {
 
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
-    if (!regFactory || !regUserVal || !regPass) {
+    if (!regFactory || !regUserVal || !regEmail || !regPass) {
       setErrorMsg('Please fill all fields.');
       return;
     }
@@ -60,13 +60,13 @@ export default function Auth({ onLoginSuccess }) {
     setLoading(true);
     
     try {
-      const data = await registerUser(regFactory, regUserVal, regPass);
+      const data = await registerUser(regFactory.trim(), regUserVal.trim(), regEmail.trim(), regPass);
       if (data.success) {
         setSuccessMsg('Registration successful! Please sign in.');
         setTab('login');
-        // Pre-fill login info
-        setLoginFactory(regFactory);
-        setLoginUserVal(regUserVal);
+        // Pre-fill login email
+        setLoginEmail(regEmail.trim());
+        setLoginPass('');
       } else {
         setErrorMsg(data.message || 'Registration failed.');
       }
@@ -120,24 +120,13 @@ export default function Auth({ onLoginSuccess }) {
         {tab === 'login' ? (
           <form onSubmit={handleLoginSubmit}>
             <div className="form-group">
-              <label className="form-label">Factory Code / Name</label>
+              <label className="form-label">Email Address</label>
               <input 
-                type="text" 
+                type="email" 
                 className="form-control" 
-                placeholder="e.g. acme"
-                value={loginFactory}
-                onChange={e => setLoginFactory(e.target.value.trim().toLowerCase())}
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label className="form-label">Username</label>
-              <input 
-                type="text" 
-                className="form-control" 
-                placeholder="e.g. admin"
-                value={loginUserVal}
-                onChange={e => setLoginUserVal(e.target.value.trim().toLowerCase())}
+                placeholder="e.g. manager@factory.com"
+                value={loginEmail}
+                onChange={e => setLoginEmail(e.target.value)}
                 required
               />
             </div>
@@ -165,7 +154,7 @@ export default function Auth({ onLoginSuccess }) {
                 className="form-control" 
                 placeholder="e.g. Acme Manufacturing"
                 value={regFactory}
-                onChange={e => setRegFactory(e.target.value.trim().toLowerCase())}
+                onChange={e => setRegFactory(e.target.value)}
                 required
               />
             </div>
@@ -176,7 +165,18 @@ export default function Auth({ onLoginSuccess }) {
                 className="form-control" 
                 placeholder="e.g. john"
                 value={regUserVal}
-                onChange={e => setRegUserVal(e.target.value.trim().toLowerCase())}
+                onChange={e => setRegUserVal(e.target.value)}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Email Address</label>
+              <input 
+                type="email" 
+                className="form-control" 
+                placeholder="e.g. john@factory.com"
+                value={regEmail}
+                onChange={e => setRegEmail(e.target.value)}
                 required
               />
             </div>

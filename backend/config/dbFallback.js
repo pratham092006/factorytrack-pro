@@ -52,21 +52,14 @@ function writeDB(data) {
   }
 }
 
-// Helper to construct a valid and unique email address from username and factory
-function getSafeEmail(username, factory) {
-  const cleanUsername = username.toLowerCase().replace(/[^a-z0-9._+-]/g, '-');
-  const cleanFactory = factory.toLowerCase().replace(/[^a-z0-9.-]/g, '-');
-  return `${cleanUsername}@${cleanFactory}.factorytrack.local`;
-}
-
 module.exports = {
   // Auth operations
-  registerUser: async (factory, username, password) => {
+  registerUser: async (email, password, username, factory) => {
     const db = readDB();
-    const email = getSafeEmail(username, factory);
+    const cleanEmail = email.toLowerCase().trim();
     
     // Check if email already exists
-    if (db.users.some(u => u.email === email)) {
+    if (db.users.some(u => u.email === cleanEmail)) {
       throw new Error('User already exists');
     }
     
@@ -74,7 +67,7 @@ module.exports = {
       id: crypto.randomUUID(),
       factory,
       username,
-      email,
+      email: cleanEmail,
       password,
       created_at: new Date().toISOString()
     };
@@ -85,10 +78,10 @@ module.exports = {
     return newUser;
   },
 
-  loginUser: async (factory, username, password) => {
+  loginUser: async (email, password) => {
     const db = readDB();
-    const email = getSafeEmail(username, factory);
-    const user = db.users.find(u => u.email === email && u.password === password);
+    const cleanEmail = email.toLowerCase().trim();
+    const user = db.users.find(u => u.email === cleanEmail && u.password === password);
     
     if (!user) {
       throw new Error('Invalid credentials');
