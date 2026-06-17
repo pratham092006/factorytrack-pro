@@ -53,25 +53,75 @@ router.post('/register', async (req, res) => {
       });
     }
 
-    const { data, error } = await supabase.auth.signUp({
-      email: cleanEmail,
-      password: password,
-      options: {
-        data: {
+    let authData;
+    let authError;
+    const clientUrl = process.env.CLIENT_URL || req.headers.referer || `${req.protocol}://${req.get('host')}`;
+
+    try {
+      // Try to create the user directly with email auto-confirmed via Admin API (requires service key)
+      const { data: adminData, error: adminError } = await supabase.auth.admin.createUser({
+        email: cleanEmail,
+        password: password,
+        email_confirm: true,
+        user_metadata: {
           factory: factory,
           username: username
         }
-      }
-    });
+      });
 
-    if (error) {
+      if (adminError) {
+        const isAuthError = adminError.status === 401 || 
+                            adminError.status === 403 || 
+                            adminError.message?.toLowerCase().includes('service_role') || 
+                            adminError.message?.toLowerCase().includes('not allowed');
+        if (isAuthError) {
+          console.log('Admin user creation unauthorized, falling back to standard signUp...');
+          const signUpResult = await supabase.auth.signUp({
+            email: cleanEmail,
+            password: password,
+            options: {
+              emailRedirectTo: clientUrl,
+              data: {
+                factory: factory,
+                username: username
+              }
+            }
+          });
+          authData = signUpResult.data;
+          authError = signUpResult.error;
+        } else {
+          authData = adminData;
+          authError = adminError;
+        }
+      } else {
+        authData = adminData;
+        console.log('✅ User created and confirmed via Admin API successfully');
+      }
+    } catch (adminErr) {
+      console.warn('Admin user creation failed, falling back to standard signUp:', adminErr.message);
+      const signUpResult = await supabase.auth.signUp({
+        email: cleanEmail,
+        password: password,
+        options: {
+          emailRedirectTo: clientUrl,
+          data: {
+            factory: factory,
+            username: username
+          }
+        }
+      });
+      authData = signUpResult.data;
+      authError = signUpResult.error;
+    }
+
+    if (authError) {
       return res.status(400).json({
         success: false,
-        message: error.message
+        message: authError.message
       });
     }
 
-    const userId = data?.user?.id || data?.session?.user?.id;
+    const userId = authData?.user?.id || authData?.session?.user?.id;
     if (!userId) {
       return res.status(400).json({
         success: false,
