@@ -32,7 +32,7 @@ export default function Analytics({
   const totalAttRecords = monthAtt.length;
   const presentCount = monthAtt.filter(a => a.status === 'present').length;
   const absentCount = monthAtt.filter(a => a.status === 'absent').length;
-  const halfDayCount = monthAtt.filter(a => a.status === 'halfday').length;
+  const halfDayCount = monthAtt.filter(a => a.status === 'halfday' || a.status === 'half-day').length;
   const leaveCount = monthAtt.filter(a => a.status === 'leave').length;
 
   const attendanceRate = totalAttRecords > 0 

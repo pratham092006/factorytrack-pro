@@ -41,11 +41,11 @@ export default function Savings({
           <div className="page-header-subtitle">Manage worker cooperative savings deposits, contributions, and cash withdrawals</div>
         </div>
         <div className="page-header-actions">
-          <button className="btn btn-success" onClick={() => onOpenSavingsModal('deposit')}>
+          <button className="btn btn-success" onClick={() => onOpenSavingsModal(null, 'deposit')}>
             <span className="material-symbols-outlined">savings</span>
             Deposit
           </button>
-          <button className="btn btn-warning" onClick={() => onOpenSavingsModal('withdraw')}>
+          <button className="btn btn-warning" onClick={() => onOpenSavingsModal(null, 'withdraw')}>
             <span className="material-symbols-outlined">payments</span>
             Withdraw
           </button>
@@ -89,14 +89,14 @@ export default function Savings({
                     <button 
                       className="btn btn-sm btn-success" 
                       style={{ flex: 1 }}
-                      onClick={() => onOpenSavingsModal('deposit', s.id)}
+                      onClick={() => onOpenSavingsModal(s, 'deposit')}
                     >
                       Deposit
                     </button>
                     <button 
                       className="btn btn-sm btn-warning" 
                       style={{ flex: 1 }}
-                      onClick={() => onOpenSavingsModal('withdraw', s.id)}
+                      onClick={() => onOpenSavingsModal(s, 'withdraw')}
                     >
                       Withdraw
                     </button>

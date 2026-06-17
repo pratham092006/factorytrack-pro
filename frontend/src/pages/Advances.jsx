@@ -67,7 +67,7 @@ export default function Advances({
                     </div>
                     <button 
                       className="btn btn-sm btn-outline btn-icon-only" 
-                      onClick={() => onGiveAdvance(s.id)}
+                      onClick={() => onGiveAdvance(s)}
                       title="Give Advance to this staff"
                     >
                       <span className="material-symbols-outlined">add</span>
