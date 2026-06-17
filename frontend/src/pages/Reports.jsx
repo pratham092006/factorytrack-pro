@@ -134,7 +134,7 @@ export default function Reports({
 
       {/* Report Table */}
       <div className="card desktop-only">
-        <div className="card-body" style={{ padding: 0, overflowX: 'auto' }}>
+        <div className="table-wrap">
           <table className="table">
             <thead>
               <tr>
