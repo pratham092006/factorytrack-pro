@@ -119,7 +119,7 @@ export default function Savings({
       </div>
 
       {/* Savings Ledger Logs */}
-      <div className="card" style={{ marginTop: '10px' }}>
+      <div className="card desktop-only" style={{ marginTop: '10px' }}>
         <div className="card-header">
           <div className="card-title">
             <span className="material-symbols-outlined">list_alt</span>
@@ -185,6 +185,89 @@ export default function Savings({
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* Mobile view */}
+      <div className="mobile-only" style={{ marginTop: '16px' }}>
+        <div className="card-title" style={{ fontSize: '14px', marginBottom: '12px', paddingLeft: '4px' }}>
+          <span className="material-symbols-outlined" style={{ fontSize: '18px', color: 'var(--primary)' }}>list_alt</span>
+          Savings Transaction Ledger
+        </div>
+        {sortedSavings.length > 0 ? (
+          <div className="mobile-card-list">
+            {sortedSavings.map(r => {
+              const s = staff.find(x => x.id === r.staffId);
+              const balAfter = getSavingsBalanceUpTo(r.staffId, r.id);
+              
+              return (
+                <div key={r.id} className="mobile-card">
+                  <div className="mobile-card-header">
+                    <div className="mobile-card-title">
+                      <div className="user-avatar" style={{ width: '36px', height: '36px' }}>
+                        {s?.name?.[0]?.toUpperCase() || '?'}
+                      </div>
+                      <div>
+                        <div className="mobile-card-title-text">{s?.name || 'Unknown Staff'}</div>
+                        <div className="mobile-card-subtitle-text" style={{ marginTop: '2px' }}>
+                          <span className="badge badge-primary" style={{ fontSize: '10px', padding: '2px 6px' }}>
+                            {s?.staffId || ''}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <span className="badge badge-gray">
+                      {fmtDate(r.date)}
+                    </span>
+                  </div>
+
+                  <div className="mobile-card-body">
+                    <div className="mobile-card-row">
+                      <span className="mobile-card-label">Transaction Type</span>
+                      <span className="mobile-card-value">
+                        <span className={`badge ${r.type === 'deposit' ? 'badge-success' : 'badge-warning'}`} style={{ fontSize: '10px', padding: '2px 6px' }}>
+                          <span className="material-symbols-outlined" style={{ fontSize: '12px' }}>
+                            {r.type === 'deposit' ? 'savings' : 'output'}
+                          </span>
+                          {r.type === 'deposit' ? 'Deposit' : 'Withdraw'}
+                        </span>
+                      </span>
+                    </div>
+
+                    <div className="mobile-card-row">
+                      <span className="mobile-card-label">Amount</span>
+                      <span className="mobile-card-value" style={{ color: r.type === 'deposit' ? 'var(--success)' : 'var(--danger)', fontWeight: 700 }}>
+                        {r.type === 'deposit' ? '+' : '-'}{fmtCurrency(r.amount)}
+                      </span>
+                    </div>
+
+                    <div className="mobile-card-row">
+                      <span className="mobile-card-label">Notes</span>
+                      <span className="mobile-card-value">{r.notes || '-'}</span>
+                    </div>
+
+                    <div className="mobile-card-row" style={{ marginTop: '4px', paddingTop: '8px', borderTop: '1px dashed var(--border)' }}>
+                      <span className="mobile-card-label" style={{ fontWeight: 700, color: 'var(--text-primary)' }}>
+                        Running Balance
+                      </span>
+                      <span className="mobile-card-value" style={{ fontWeight: 800, color: 'var(--primary)', fontSize: '15px' }}>
+                        {fmtCurrency(balAfter)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="card">
+            <div className="card-body">
+              <div className="empty-state">
+                <span className="material-symbols-outlined empty-icon" style={{ fontSize: '42px' }}>savings</span>
+                <h3>No savings transactions found</h3>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

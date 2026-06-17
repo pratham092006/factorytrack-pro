@@ -210,7 +210,7 @@ export default function Analytics({
       </div>
 
       {/* Top Level Metric Cards */}
-      <div className="grid-4 stats-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
+      <div className="stats-grid">
         <div className="stat-card">
           <div className="stat-icon-wrapper" style={{ background: 'var(--success-light)', color: 'var(--success)' }}>
             <span className="material-symbols-outlined">analytics</span>
@@ -255,7 +255,7 @@ export default function Analytics({
       </div>
 
       {/* Charts Layout */}
-      <div className="grid-main-chart" style={{ gridTemplateColumns: '1.5fr 1fr', gap: '24px' }}>
+      <div className="grid-main-chart">
         {/* Left Card: Advance Recovery Graph */}
         <div className="card">
           <div className="card-header" style={{ borderBottom: '1px solid var(--border)', padding: '20px 24px' }}>

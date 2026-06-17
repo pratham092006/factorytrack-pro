@@ -105,7 +105,7 @@ export default function Advances({
       </div>
 
       {/* History Ledger Table */}
-      <div className="card" style={{ marginTop: '10px' }}>
+      <div className="card desktop-only" style={{ marginTop: '10px' }}>
         <div className="card-header">
           <div className="card-title">
             <span className="material-symbols-outlined">history</span>
@@ -187,6 +187,101 @@ export default function Advances({
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* Mobile view */}
+      <div className="mobile-only" style={{ marginTop: '16px' }}>
+        <div className="card-title" style={{ fontSize: '14px', marginBottom: '12px', paddingLeft: '4px' }}>
+          <span className="material-symbols-outlined" style={{ fontSize: '18px', color: 'var(--primary)' }}>history</span>
+          Advances History Ledger
+        </div>
+        {advancesList.length > 0 ? (
+          <div className="mobile-card-list">
+            {advancesList.map(a => {
+              const s = staff.find(x => x.id === a.staffId);
+              const balance = a.amount - (a.repaid || 0);
+              
+              return (
+                <div key={a.id} className="mobile-card">
+                  <div className="mobile-card-header">
+                    <div className="mobile-card-title">
+                      <div className="user-avatar" style={{ width: '36px', height: '36px' }}>
+                        {s?.name?.[0]?.toUpperCase() || '?'}
+                      </div>
+                      <div>
+                        <div className="mobile-card-title-text">{s?.name || 'Unknown Staff'}</div>
+                        <div className="mobile-card-subtitle-text" style={{ marginTop: '2px' }}>
+                          <span className="badge badge-primary" style={{ fontSize: '10px', padding: '2px 6px' }}>
+                            {s?.staffId || ''}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <span className="badge badge-gray">
+                      {fmtDate(a.date)}
+                    </span>
+                  </div>
+
+                  <div className="mobile-card-body">
+                    <div className="mobile-card-row">
+                      <span className="mobile-card-label">Advance Amount</span>
+                      <span className="mobile-card-value" style={{ fontWeight: 700 }}>
+                        {fmtCurrency(a.amount)}
+                      </span>
+                    </div>
+
+                    <div className="mobile-card-row">
+                      <span className="mobile-card-label">Reason</span>
+                      <span className="mobile-card-value">{a.reason || '-'}</span>
+                    </div>
+
+                    <div className="mobile-card-row">
+                      <span className="mobile-card-label">Amount Repaid</span>
+                      <span className="mobile-card-value" style={{ color: 'var(--success)', fontWeight: 600 }}>
+                        {fmtCurrency(a.repaid || 0)}
+                      </span>
+                    </div>
+
+                    <div className="mobile-card-row" style={{ marginTop: '4px', paddingTop: '8px', borderTop: '1px dashed var(--border)' }}>
+                      <span className="mobile-card-label" style={{ fontWeight: 700, color: 'var(--text-primary)' }}>
+                        Outstanding Balance
+                      </span>
+                      <span className="mobile-card-value" style={{ color: balance > 0 ? 'var(--danger)' : 'var(--success)', fontWeight: 800, fontSize: '15px' }}>
+                        {fmtCurrency(balance)}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="mobile-card-footer">
+                    <button 
+                      className="btn btn-sm btn-outline btn-icon-only"
+                      onClick={() => onEditAdvance(a)}
+                      title="Edit"
+                    >
+                      <span className="material-symbols-outlined">edit</span>
+                    </button>
+                    <button 
+                      className="btn btn-sm btn-danger btn-icon-only"
+                      onClick={() => onDeleteAdvance(a.id)}
+                      title="Delete"
+                    >
+                      <span className="material-symbols-outlined">delete</span>
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="card">
+            <div className="card-body">
+              <div className="empty-state">
+                <span className="material-symbols-outlined empty-icon" style={{ fontSize: '42px' }}>history</span>
+                <h3>No advance transactions found</h3>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

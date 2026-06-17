@@ -133,7 +133,7 @@ export default function Reports({
       </div>
 
       {/* Report Table */}
-      <div className="card">
+      <div className="card desktop-only">
         <div className="card-body" style={{ padding: 0, overflowX: 'auto' }}>
           <table className="table">
             <thead>
@@ -203,6 +203,104 @@ export default function Reports({
             )}
           </table>
         </div>
+      </div>
+
+      {/* Mobile view */}
+      <div className="mobile-only">
+        <div className="card-title" style={{ fontSize: '14px', marginBottom: '12px', paddingLeft: '4px' }}>
+          <span className="material-symbols-outlined" style={{ fontSize: '18px', color: 'var(--primary)' }}>table_chart</span>
+          Payroll Report Summary
+        </div>
+        {reportRows.length > 0 ? (
+          <div className="mobile-card-list">
+            {reportRows.map(r => (
+              <div key={r.id} className="mobile-card">
+                <div className="mobile-card-header">
+                  <div className="mobile-card-title">
+                    <div className="user-avatar" style={{ width: '36px', height: '36px' }}>
+                      {r.name?.[0]?.toUpperCase() || '?'}
+                    </div>
+                    <div>
+                      <div className="mobile-card-title-text">{r.name || 'Unknown Staff'}</div>
+                      <div className="mobile-card-subtitle-text" style={{ marginTop: '2px' }}>
+                        <span className="badge badge-primary" style={{ fontSize: '10px', padding: '2px 6px' }}>
+                          {r.staffId}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <span className="badge badge-info">
+                    {r.salaryType === 'monthly' ? 'Monthly' : 'Daily'}
+                  </span>
+                </div>
+
+                <div className="mobile-card-body">
+                  <div className="mobile-card-row">
+                    <span className="mobile-card-label">Attendance</span>
+                    <span className="mobile-card-value">
+                      {r.presentDays} days ({r.totalWorked} hrs)
+                    </span>
+                  </div>
+
+                  <div className="mobile-card-row">
+                    <span className="mobile-card-label">Overtime Hours</span>
+                    <span className="mobile-card-value">
+                      {r.totalOT > 0 ? (
+                        <span style={{ color: 'var(--warning)', fontWeight: 600 }}>
+                          +{r.totalOT} hrs
+                        </span>
+                      ) : '-'}
+                    </span>
+                  </div>
+
+                  <div className="mobile-card-row">
+                    <span className="mobile-card-label">Basic Pay</span>
+                    <span className="mobile-card-value">{fmtCurrency(r.basicPay)}</span>
+                  </div>
+
+                  <div className="mobile-card-row">
+                    <span className="mobile-card-label">Overtime Pay</span>
+                    <span className="mobile-card-value" style={{ color: 'var(--success)', fontWeight: 600 }}>
+                      {r.otPay > 0 ? `+${fmtCurrency(r.otPay)}` : '-'}
+                    </span>
+                  </div>
+
+                  <div className="mobile-card-row">
+                    <span className="mobile-card-label">Gross Salary</span>
+                    <span className="mobile-card-value" style={{ fontWeight: 600 }}>
+                      {fmtCurrency(r.gross)}
+                    </span>
+                  </div>
+
+                  <div className="mobile-card-row">
+                    <span className="mobile-card-label">Advances Deducted</span>
+                    <span className="mobile-card-value" style={{ color: 'var(--danger)', fontWeight: 600 }}>
+                      {r.advances > 0 ? `-${fmtCurrency(r.advances)}` : '-'}
+                    </span>
+                  </div>
+
+                  <div className="mobile-card-row" style={{ marginTop: '4px', paddingTop: '8px', borderTop: '1px solid var(--border)' }}>
+                    <span className="mobile-card-label" style={{ fontWeight: 800, color: 'var(--text-primary)' }}>
+                      Net Payable
+                    </span>
+                    <span className="mobile-card-value" style={{ fontSize: '16px', color: 'var(--primary)', fontWeight: 800 }}>
+                      {fmtCurrency(r.net)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="card">
+            <div className="card-body">
+              <div className="empty-state">
+                <span className="material-symbols-outlined empty-icon" style={{ fontSize: '40px', display: 'block', marginBottom: '8px' }}>table_chart</span>
+                No payroll data for the selected period
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

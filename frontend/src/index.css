@@ -2189,3 +2189,105 @@ tbody tr:last-child td {
     font-size: 12px;
   }
 }
+
+/* ===== RESPONSIVE MOBILE CARDS SYSTEM ===== */
+@media (min-width: 768px) {
+  .mobile-only {
+    display: none !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .desktop-only {
+    display: none !important;
+  }
+}
+
+.mobile-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.mobile-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mobile-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px dashed var(--border);
+  padding-bottom: 10px;
+}
+
+.mobile-card-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mobile-card-title-text {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.mobile-card-subtitle-text {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+
+.mobile-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mobile-card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+}
+
+.mobile-card-label {
+  color: var(--text-secondary);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mobile-card-label .material-symbols-outlined {
+  font-size: 16px;
+  color: var(--text-muted);
+}
+
+.mobile-card-value {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.mobile-card-footer {
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+@media (max-width: 400px) {
+  .stats-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+

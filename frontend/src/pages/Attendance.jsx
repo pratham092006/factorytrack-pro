@@ -102,8 +102,8 @@ export default function Attendance({
         </div>
       </div>
 
-      {/* Attendance Sheet Card */}
-      <div className="card">
+      {/* Desktop view */}
+      <div className="card desktop-only">
         <div className="card-header">
           <div className="card-title">
             <span className="material-symbols-outlined">assignment</span>
@@ -253,6 +253,182 @@ export default function Attendance({
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* Mobile view */}
+      <div className="mobile-only">
+        {/* Unmarked Staff Cards */}
+        {tabFilter === 'today' && unmarkedStaff.length > 0 && (
+          <div style={{ marginBottom: '20px' }}>
+            <div className="card-title" style={{ fontSize: '14px', marginBottom: '12px', paddingLeft: '4px' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: '18px', color: 'var(--text-muted)' }}>schedule</span>
+              Unmarked Staff ({unmarkedStaff.length})
+            </div>
+            <div className="mobile-card-list">
+              {unmarkedStaff.map(s => (
+                <div key={`unmarked-${s.id}`} className="mobile-card" style={{ opacity: 0.9 }}>
+                  <div className="mobile-card-header">
+                    <div className="mobile-card-title">
+                      <div className="user-avatar" style={{ width: '36px', height: '36px', background: 'var(--neutral)' }}>
+                        {s.name?.[0]?.toUpperCase() || '?'}
+                      </div>
+                      <div>
+                        <div className="mobile-card-title-text">{s.name || 'Unknown Staff'}</div>
+                        <div className="mobile-card-subtitle-text" style={{ marginTop: '2px' }}>
+                          <span className="badge badge-primary" style={{ fontSize: '10px', padding: '2px 6px' }}>
+                            {s.staffId}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <span className="badge badge-gray">
+                      <span className="material-symbols-outlined" style={{ fontSize: '12px' }}>schedule</span>
+                      Not Marked
+                    </span>
+                  </div>
+                  <div className="mobile-card-body">
+                    <div className="mobile-card-row">
+                      <span className="mobile-card-label">Date</span>
+                      <span className="mobile-card-value">{fmtDate(dateFilter)}</span>
+                    </div>
+                  </div>
+                  <div className="mobile-card-footer">
+                    <button 
+                      className="btn btn-sm btn-primary"
+                      style={{ width: '100%', justifyContent: 'center' }}
+                      onClick={() => onMarkAttendance(s.id)}
+                    >
+                      <span className="material-symbols-outlined">edit_square</span>
+                      Mark Attendance
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Marked Attendance Cards */}
+        <div>
+          {records.length > 0 && (
+            <div className="card-title" style={{ fontSize: '14px', marginBottom: '12px', paddingLeft: '4px' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: '18px', color: 'var(--primary)' }}>check_circle</span>
+              Marked Records ({records.length})
+            </div>
+          )}
+          {records.length > 0 ? (
+            <div className="mobile-card-list">
+              {records.map(a => {
+                const s = staff.find(x => x.id === a.staffId);
+                const statusBadge = {
+                  present: 'badge-success', absent: 'badge-danger',
+                  'half-day': 'badge-warning', leave: 'badge-info'
+                }[a.status] || 'badge-gray';
+                
+                return (
+                  <div key={a.id} className="mobile-card">
+                    <div className="mobile-card-header">
+                      <div className="mobile-card-title">
+                        <div className="user-avatar" style={{ width: '36px', height: '36px' }}>
+                          {s?.name?.[0]?.toUpperCase() || '?'}
+                        </div>
+                        <div>
+                          <div className="mobile-card-title-text">{s?.name || 'Unknown Staff'}</div>
+                          <div className="mobile-card-subtitle-text" style={{ marginTop: '2px' }}>
+                            <span className="badge badge-primary" style={{ fontSize: '10px', padding: '2px 6px' }}>
+                              {s?.staffId || ''}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <span className={`badge ${statusBadge}`}>
+                        <span className="material-symbols-outlined" style={{ fontSize: '12px' }}>
+                          {a.status === 'present' ? 'check_circle' : a.status === 'absent' ? 'cancel' : 'warning'}
+                        </span>
+                        {a.status.charAt(0).toUpperCase() + a.status.slice(1)}
+                      </span>
+                    </div>
+
+                    <div className="mobile-card-body">
+                      <div className="mobile-card-row">
+                        <span className="mobile-card-label">Date</span>
+                        <span className="mobile-card-value">{fmtDate(a.date)}</span>
+                      </div>
+                      {(a.status === 'present' || a.status === 'half-day') && (
+                        <>
+                          <div className="mobile-card-row">
+                            <span className="mobile-card-label">Shift Hours</span>
+                            <span className="mobile-card-value">
+                              {a.inTime || '-'} to {a.outTime || '-'}
+                            </span>
+                          </div>
+                          <div className="mobile-card-row">
+                            <span className="mobile-card-label">Hours Worked</span>
+                            <span className="mobile-card-value">
+                              {a.workedHours ? `${a.workedHours} hrs` : '-'}
+                            </span>
+                          </div>
+                          <div className="mobile-card-row">
+                            <span className="mobile-card-label">Overtime</span>
+                            <span className="mobile-card-value">
+                              {a.overtimeHours ? (
+                                <span style={{ color: 'var(--warning)', fontWeight: 600 }}>
+                                  +{a.overtimeHours} hrs
+                                </span>
+                              ) : '-'}
+                            </span>
+                          </div>
+                        </>
+                      )}
+                    </div>
+
+                    <div className="mobile-card-footer">
+                      <button 
+                        className="btn btn-sm btn-outline btn-icon-only"
+                        onClick={() => onMarkAttendance(a.staffId, a.id)}
+                        title="Edit Record"
+                      >
+                        <span className="material-symbols-outlined">edit</span>
+                      </button>
+                      <button 
+                        className="btn btn-sm btn-danger btn-icon-only"
+                        onClick={() => onDeleteAttendance(a.id)}
+                        title="Delete Record"
+                      >
+                        <span className="material-symbols-outlined">delete</span>
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            tabFilter !== 'today' && (
+              <div className="card">
+                <div className="card-body">
+                  <div className="empty-state">
+                    <span className="material-symbols-outlined empty-icon" style={{ fontSize: '48px' }}>assignment_turned_in</span>
+                    <h3>No attendance records found</h3>
+                    <p>Attendance will appear here once marked for this selection.</p>
+                  </div>
+                </div>
+              </div>
+            )
+          )}
+        </div>
+
+        {/* Catch-all empty state if nothing unmarked and nothing marked */}
+        {tabFilter === 'today' && unmarkedStaff.length === 0 && records.length === 0 && (
+          <div className="card">
+            <div className="card-body">
+              <div className="empty-state">
+                <span className="material-symbols-outlined empty-icon" style={{ fontSize: '48px' }}>check_circle</span>
+                <h3>All staff accounted for</h3>
+                <p>No unmarked staff members found for {fmtDate(dateFilter)}.</p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -32,7 +32,8 @@ export default function Salary({
         </div>
       </div>
 
-      <div className="card">
+      {/* Desktop view */}
+      <div className="card desktop-only">
         <div className="card-header">
           <div className="card-title">
             <span className="material-symbols-outlined">payments</span>
@@ -130,6 +131,115 @@ export default function Salary({
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* Mobile view */}
+      <div className="mobile-only">
+        <div className="card-title" style={{ fontSize: '14px', marginBottom: '12px', paddingLeft: '4px' }}>
+          <span className="material-symbols-outlined" style={{ fontSize: '18px', color: 'var(--primary)' }}>payments</span>
+          Payroll Sheet for {monthLabel(selectedMonth)}
+        </div>
+        {staff.length > 0 ? (
+          <div className="mobile-card-list">
+            {staff.map(s => {
+              const sal = calcStaffSalary(s.id, selectedMonth);
+              if (!sal) return null;
+              const rate = s.salaryType === 'monthly' 
+                ? `${fmtCurrency(s.monthlySalary)}/mo` 
+                : `${fmtCurrency(s.dailyWage)}/day`;
+              
+              return (
+                <div key={s.id} className="mobile-card">
+                  <div className="mobile-card-header">
+                    <div className="mobile-card-title">
+                      <div className="user-avatar" style={{ width: '36px', height: '36px' }}>
+                        {s.name?.[0]?.toUpperCase() || '?'}
+                      </div>
+                      <div>
+                        <div className="mobile-card-title-text">{s.name || 'Unknown Staff'}</div>
+                        <div className="mobile-card-subtitle-text" style={{ marginTop: '2px' }}>
+                          <span className="badge badge-primary" style={{ fontSize: '10px', padding: '2px 6px' }}>
+                            {s.staffId}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <span className="badge badge-info">
+                      {s.salaryType === 'monthly' ? 'Monthly' : 'Daily'}
+                    </span>
+                  </div>
+
+                  <div className="mobile-card-body">
+                    <div className="mobile-card-row">
+                      <span className="mobile-card-label">Rate</span>
+                      <span className="mobile-card-value">{rate}</span>
+                    </div>
+
+                    <div className="mobile-card-row">
+                      <span className="mobile-card-label">Attendance</span>
+                      <span className="mobile-card-value">
+                        <span style={{ color: 'var(--success)', fontWeight: 600 }}>{sal.presentDays} Present</span>
+                        {sal.halfDays > 0 && (
+                          <span style={{ fontSize: '11px', color: 'var(--warning)', marginLeft: '3px' }}>
+                            (+{sal.halfDays} half)
+                          </span>
+                        )}
+                      </span>
+                    </div>
+
+                    <div className="mobile-card-row">
+                      <span className="mobile-card-label">Absent Days</span>
+                      <span className="mobile-card-value" style={{ color: sal.absentDays > 0 ? 'var(--danger)' : 'inherit', fontWeight: 600 }}>
+                        {sal.absentDays} days
+                      </span>
+                    </div>
+
+                    <div className="mobile-card-row">
+                      <span className="mobile-card-label">Hours Worked</span>
+                      <span className="mobile-card-value">{sal.totalWorked} hrs</span>
+                    </div>
+
+                    <div className="mobile-card-row">
+                      <span className="mobile-card-label">Overtime Hours</span>
+                      <span className="mobile-card-value">{sal.totalOT > 0 ? `+${sal.totalOT} hrs` : '-'}</span>
+                    </div>
+
+                    <div className="mobile-card-row" style={{ marginTop: '4px', paddingTop: '8px', borderTop: '1px dashed var(--border)' }}>
+                      <span className="mobile-card-label">Base Salary</span>
+                      <span className="mobile-card-value">{fmtCurrency(sal.basicPay)}</span>
+                    </div>
+
+                    <div className="mobile-card-row">
+                      <span className="mobile-card-label">Overtime Pay</span>
+                      <span className="mobile-card-value" style={{ color: 'var(--success)', fontWeight: 600 }}>
+                        {sal.otPay > 0 ? `+${fmtCurrency(sal.otPay)}` : '-'}
+                      </span>
+                    </div>
+
+                    <div className="mobile-card-row" style={{ marginTop: '4px', paddingTop: '8px', borderTop: '1px solid var(--border)' }}>
+                      <span className="mobile-card-label" style={{ fontWeight: 800, color: 'var(--text-primary)' }}>
+                        Gross Salary
+                      </span>
+                      <span className="mobile-card-value" style={{ fontSize: '16px', color: 'var(--primary)', fontWeight: 800 }}>
+                        {fmtCurrency(sal.grossSalary)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="card">
+            <div className="card-body">
+              <div className="empty-state">
+                <span className="material-symbols-outlined empty-icon" style={{ fontSize: '48px' }}>paid</span>
+                <h3>No staff data available</h3>
+                <p>Add employees to computed payroll sheets.</p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
