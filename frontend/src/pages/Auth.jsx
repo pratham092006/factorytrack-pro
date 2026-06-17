@@ -17,6 +17,7 @@ export default function Auth({ onLoginSuccess }) {
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
@@ -67,6 +68,7 @@ export default function Auth({ onLoginSuccess }) {
         // Pre-fill login email
         setLoginEmail(regEmail.trim());
         setLoginPass('');
+        setShowPassword(false);
       } else {
         setErrorMsg(data.message || 'Registration failed.');
       }
@@ -91,13 +93,13 @@ export default function Auth({ onLoginSuccess }) {
         <div className="auth-tabs">
           <div 
             className={`auth-tab ${tab === 'login' ? 'active' : ''}`}
-            onClick={() => { setTab('login'); setErrorMsg(''); setSuccessMsg(''); }}
+            onClick={() => { setTab('login'); setErrorMsg(''); setSuccessMsg(''); setShowPassword(false); }}
           >
             Login
           </div>
           <div 
             className={`auth-tab ${tab === 'register' ? 'active' : ''}`}
-            onClick={() => { setTab('register'); setErrorMsg(''); setSuccessMsg(''); }}
+            onClick={() => { setTab('register'); setErrorMsg(''); setSuccessMsg(''); setShowPassword(false); }}
           >
             Register
           </div>
@@ -132,14 +134,39 @@ export default function Auth({ onLoginSuccess }) {
             </div>
             <div className="form-group">
               <label className="form-label">Password</label>
-              <input 
-                type="password" 
-                className="form-control" 
-                placeholder="••••••••"
-                value={loginPass}
-                onChange={e => setLoginPass(e.target.value)}
-                required
-              />
+              <div className="password-input-wrapper" style={{ position: 'relative' }}>
+                <input 
+                  type={showPassword ? "text" : "password"} 
+                  className="form-control" 
+                  placeholder="••••••••"
+                  value={loginPass}
+                  onChange={e => setLoginPass(e.target.value)}
+                  style={{ paddingRight: '40px' }}
+                  required
+                />
+                <button 
+                  type="button"
+                  className="show-password-toggle"
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{
+                    position: 'absolute',
+                    right: '10px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    color: '#64748b',
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '4px'
+                  }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
+                    {showPassword ? 'visibility_off' : 'visibility'}
+                  </span>
+                </button>
+              </div>
             </div>
             <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '12px' }} disabled={loading}>
               {loading ? 'Signing In...' : 'Sign In →'}
@@ -182,14 +209,39 @@ export default function Auth({ onLoginSuccess }) {
             </div>
             <div className="form-group">
               <label className="form-label">Password</label>
-              <input 
-                type="password" 
-                className="form-control" 
-                placeholder="Minimum 6 characters"
-                value={regPass}
-                onChange={e => setRegPass(e.target.value)}
-                required
-              />
+              <div className="password-input-wrapper" style={{ position: 'relative' }}>
+                <input 
+                  type={showPassword ? "text" : "password"} 
+                  className="form-control" 
+                  placeholder="Minimum 6 characters"
+                  value={regPass}
+                  onChange={e => setRegPass(e.target.value)}
+                  style={{ paddingRight: '40px' }}
+                  required
+                />
+                <button 
+                  type="button"
+                  className="show-password-toggle"
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{
+                    position: 'absolute',
+                    right: '10px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    color: '#64748b',
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '4px'
+                  }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
+                    {showPassword ? 'visibility_off' : 'visibility'}
+                  </span>
+                </button>
+              </div>
             </div>
             <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '12px' }} disabled={loading}>
               {loading ? 'Creating Account...' : 'Create Account →'}
