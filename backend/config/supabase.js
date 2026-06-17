@@ -1,5 +1,6 @@
 const { createClient } = require('@supabase/supabase-js');
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '../../.env') });
 
 // Initialize Supabase client - Prefer service key for backend operations to bypass RLS checks
 const supabaseUrl = process.env.SUPABASE_URL;

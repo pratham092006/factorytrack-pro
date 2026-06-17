@@ -6,7 +6,7 @@ const fs = require('fs');
 const supabase = require('./config/supabase');
 
 // Load environment variables
-dotenv.config();
+dotenv.config({ path: path.join(__dirname, '../.env') });
 
 const app = express();
 
