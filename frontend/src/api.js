@@ -67,6 +67,7 @@ function mapStaffToFrontend(s) {
     salaryType: s.salary_type,
     dailyWage: Number(s.daily_wage || 0),
     monthlySalary: Number(s.monthly_salary || 0),
+    workingHours: Number(s.working_hours || 8),
     status: s.status,
     joiningDate: s.joining_date || (s.created_at ? s.created_at.slice(0, 10) : ''),
     createdAt: s.created_at,
@@ -83,6 +84,7 @@ function mapStaffToBackend(s) {
     salaryType: s.salaryType,
     dailyWage: Number(s.dailyWage || 0),
     monthlySalary: Number(s.monthlySalary || 0),
+    workingHours: Number(s.workingHours || 8),
     status: s.status
   };
 }

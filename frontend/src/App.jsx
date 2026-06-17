@@ -271,14 +271,15 @@ export default function App() {
 
     let baseSalary = 0, otPay = 0, grossSalary = 0;
 
+    const stdHours = s.workingHours || 8;
     if (s.salaryType === 'monthly') {
       const perDayRate = s.monthlySalary / workDays;
       baseSalary = (presentDays + halfDays * 0.5) * perDayRate;
-      const hourlyRate = perDayRate / 8; // Standard 8 hour workday
+      const hourlyRate = perDayRate / stdHours;
       otPay = totalOT * hourlyRate * otMult;
     } else {
       baseSalary = (presentDays + halfDays * 0.5) * s.dailyWage;
-      const hourlyRate = s.dailyWage / 8; // Standard 8 hour workday
+      const hourlyRate = s.dailyWage / stdHours;
       otPay = totalOT * hourlyRate * otMult;
     }
 

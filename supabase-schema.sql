@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS staff (
   salary_type TEXT NOT NULL CHECK (salary_type IN ('daily', 'monthly')),
   daily_wage NUMERIC(10, 2) DEFAULT 0,
   monthly_salary NUMERIC(10, 2) DEFAULT 0,
+  working_hours NUMERIC(4, 2) DEFAULT 8,
   status TEXT DEFAULT 'active' CHECK (status IN ('active', 'inactive')),
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW(),

@@ -93,6 +93,9 @@ export default function Staff({
                         <span className="badge badge-info">
                           {s.salaryType === 'monthly' ? 'Monthly' : 'Daily Wage'}
                         </span>
+                        <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px' }}>
+                          {s.workingHours || 8} hrs/day
+                        </div>
                       </td>
                       <td><strong>{rate}</strong></td>
                       <td>

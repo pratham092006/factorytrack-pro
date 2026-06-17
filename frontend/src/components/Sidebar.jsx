@@ -36,7 +36,7 @@ export default function Sidebar({
       ></div>
 
       <nav className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
-        <div className="sidebar-header">
+        <div className="sidebar-header" onClick={() => { setActivePage('dashboard'); setSidebarOpen(false); }} style={{ cursor: 'pointer' }}>
           <div className="sidebar-logo-container">
             <span className="material-symbols-outlined">precision_manufacturing</span>
           </div>

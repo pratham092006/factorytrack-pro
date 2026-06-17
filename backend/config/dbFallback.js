@@ -127,6 +127,7 @@ module.exports = {
       salary_type: staffData.salaryType,
       daily_wage: Number(staffData.dailyWage || 0),
       monthly_salary: Number(staffData.monthlySalary || 0),
+      working_hours: Number(staffData.workingHours || 8),
       status: staffData.status || 'active',
       created_at: new Date().toISOString()
     };
@@ -147,6 +148,7 @@ module.exports = {
       salary_type: staffData.salaryType,
       daily_wage: Number(staffData.dailyWage || 0),
       monthly_salary: Number(staffData.monthlySalary || 0),
+      working_hours: Number(staffData.workingHours || 8),
       status: staffData.status || 'active',
       updated_at: new Date().toISOString()
     };

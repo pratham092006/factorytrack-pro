@@ -12,7 +12,8 @@ export default function Analytics({
   fmtCurrency,
   calcStaffSalary,
   getSavingsBalance,
-  getAdvanceBalance
+  getAdvanceBalance,
+  monthLabel
 }) {
   const [selectedMonth, setSelectedMonth] = useState(thisMonthKey());
   const monthKeys = getMonthKeys(24);

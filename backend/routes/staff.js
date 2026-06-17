@@ -188,7 +188,7 @@ router.get('/:id', async (req, res) => {
 // Add new staff
 router.post('/', async (req, res) => {
   try {
-    const { staffId, name, mobile, salaryType, dailyWage, monthlySalary } = req.body;
+    const { staffId, name, mobile, salaryType, dailyWage, monthlySalary, workingHours } = req.body;
 
     const { data, error } = await supabase
       .from('staff')
@@ -201,6 +201,7 @@ router.post('/', async (req, res) => {
           salary_type: salaryType,
           daily_wage: dailyWage || 0,
           monthly_salary: monthlySalary || 0,
+          working_hours: workingHours || 8,
           status: 'active'
         }
       ])
@@ -219,7 +220,7 @@ router.post('/', async (req, res) => {
 // Update staff
 router.put('/:id', async (req, res) => {
   try {
-    const { name, mobile, salaryType, dailyWage, monthlySalary, status } = req.body;
+    const { name, mobile, salaryType, dailyWage, monthlySalary, workingHours, status } = req.body;
 
     const { data, error } = await supabase
       .from('staff')
@@ -229,6 +230,7 @@ router.put('/:id', async (req, res) => {
         salary_type: salaryType,
         daily_wage: dailyWage || 0,
         monthly_salary: monthlySalary || 0,
+        working_hours: workingHours || 8,
         status,
         updated_at: new Date().toISOString()
       })

@@ -40,9 +40,9 @@ export function StaffModal({ isOpen, onClose, staffMember, onSave }) {
       setJoiningDate(staffMember.joiningDate || new Date().toISOString().slice(0, 10));
       setSalaryType(staffMember.salaryType || 'monthly');
       setMonthlySalary(staffMember.monthlySalary || '');
-      setMonthlyHours(staffMember.monthlyHours || 8);
+      setMonthlyHours(staffMember.workingHours || staffMember.monthlyHours || 8);
       setDailyWage(staffMember.dailyWage || '');
-      setDailyHours(staffMember.dailyHours || 8);
+      setDailyHours(staffMember.workingHours || staffMember.dailyHours || 8);
     } else {
       setStaffId('');
       setName('');
@@ -74,6 +74,7 @@ export function StaffModal({ isOpen, onClose, staffMember, onSave }) {
       monthlyHours: salaryType === 'monthly' ? Number(monthlyHours) : 0,
       dailyWage: salaryType === 'daily' ? Number(dailyWage) : 0,
       dailyHours: salaryType === 'daily' ? Number(dailyHours) : 0,
+      workingHours: salaryType === 'monthly' ? Number(monthlyHours) : Number(dailyHours),
       status: staffMember?.status || 'active'
     };
 
@@ -247,7 +248,7 @@ export function AttendanceModal({ isOpen, onClose, staff, record, onSave }) {
 
   const getStdHours = (s) => {
     if (!s) return 8;
-    return s.salaryType === 'monthly' ? (s.monthlyHours || 8) : (s.dailyHours || 8);
+    return s.workingHours || (s.salaryType === 'monthly' ? (s.monthlyHours || 8) : (s.dailyHours || 8));
   };
 
   const handleSubmit = (e) => {
@@ -753,6 +754,10 @@ export function ProfileModal({ isOpen, onClose, staffMember, attendance, advance
               <div>
                 <div style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.8px', color: 'var(--text-muted)', fontWeight: 700 }}>Joining Date</div>
                 <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-primary)', marginTop: '2px' }}>{fmtDate(staffMember.joiningDate)}</div>
+              </div>
+              <div>
+                <div style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.8px', color: 'var(--text-muted)', fontWeight: 700 }}>Working Hours</div>
+                <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-primary)', marginTop: '2px' }}>{staffMember.workingHours || 8} hrs/day</div>
               </div>
               <div>
                 <div style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.8px', color: 'var(--text-muted)', fontWeight: 700 }}>Salary Rate</div>
