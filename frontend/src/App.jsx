@@ -298,66 +298,123 @@ export default function App() {
   };
 
   // CRUD handlers
+  // CRUD handlers
   const handleSaveStaff = async (data) => {
+    setActiveModal(null);
+    setModalData(null);
+
+    const isEdit = !!data.id;
+    const tempId = data.id || `temp-${Date.now()}`;
+    const optimisticRecord = {
+      ...data,
+      id: tempId,
+      joiningDate: data.joiningDate || new Date().toISOString().slice(0, 10),
+      status: data.status || 'active'
+    };
+
+    if (isEdit) {
+      setStaff(prev => prev.map(s => s.id === data.id ? optimisticRecord : s));
+    } else {
+      setStaff(prev => [optimisticRecord, ...prev]);
+    }
+
     try {
-      if (data.id) {
+      if (isEdit) {
         const updated = await updateStaff(data.id, data);
-        setStaff(prev => prev.map(s => s.id === updated.id ? updated : s));
+        setStaff(prev => prev.map(s => s.id === tempId ? updated : s));
         showToast('Employee profile updated successfully!');
       } else {
         const added = await addStaff(data);
-        setStaff(prev => [added, ...prev]);
+        setStaff(prev => prev.map(s => s.id === tempId ? added : s));
         showToast('New employee added successfully!');
       }
-      setActiveModal(null);
-      setModalData(null);
     } catch (err) {
+      if (isEdit) {
+        loadAllData();
+      } else {
+        setStaff(prev => prev.filter(s => s.id !== tempId));
+      }
       showToast(err.message || 'Failed to save staff record', 'danger');
     }
   };
 
   const handleDeleteStaff = async (id) => {
     if (window.confirm('Warning: Deleting this employee profile will also wipe their attendance and payment logs. Proceed?')) {
+      const oldStaff = [...staff];
+      const oldAttendance = [...attendance];
+      const oldAdvances = [...advances];
+      const oldSavings = [...savings];
+      const oldPayments = [...payments];
+
+      setStaff(prev => prev.filter(s => s.id !== id));
+      setAttendance(prev => prev.filter(a => a.staffId !== id));
+      setAdvances(prev => prev.filter(a => a.staffId !== id));
+      setSavings(prev => prev.filter(s => s.staffId !== id));
+      setPayments(prev => prev.filter(p => p.staffId !== id));
+
       try {
         await deleteStaff(id);
-        setStaff(prev => prev.filter(s => s.id !== id));
-        // Remove related transactions from cache
-        setAttendance(prev => prev.filter(a => a.staffId !== id));
-        setAdvances(prev => prev.filter(a => a.staffId !== id));
-        setSavings(prev => prev.filter(s => s.staffId !== id));
-        setPayments(prev => prev.filter(p => p.staffId !== id));
         showToast('Employee profile deleted.');
       } catch (err) {
+        setStaff(oldStaff);
+        setAttendance(oldAttendance);
+        setAdvances(oldAdvances);
+        setSavings(oldSavings);
+        setPayments(oldPayments);
         showToast(err.message || 'Failed to delete staff', 'danger');
       }
     }
   };
 
   const handleMarkAttendance = async (attendanceId, record) => {
+    setActiveModal(null);
+    setModalData(null);
+
+    const isEdit = !!attendanceId;
+    const tempId = attendanceId || `temp-${Date.now()}`;
+    const associatedStaff = staff.find(s => s.id === record.staffId);
+    const optimisticRecord = {
+      ...record,
+      id: tempId,
+      staff: associatedStaff || null
+    };
+
+    if (isEdit) {
+      setAttendance(prev => prev.map(a => a.id === attendanceId ? optimisticRecord : a));
+    } else {
+      setAttendance(prev => [optimisticRecord, ...prev]);
+    }
+
     try {
-      if (attendanceId) {
+      if (isEdit) {
         const updated = await updateAttendance(attendanceId, record);
-        setAttendance(prev => prev.map(a => a.id === updated.id ? updated : a));
+        setAttendance(prev => prev.map(a => a.id === tempId ? updated : a));
         showToast('Attendance record updated.');
       } else {
         const added = await markAttendance(record.staffId, record);
-        setAttendance(prev => [added, ...prev]);
+        setAttendance(prev => prev.map(a => a.id === tempId ? added : a));
         showToast('Attendance recorded.');
       }
-      setActiveModal(null);
-      setModalData(null);
     } catch (err) {
+      if (isEdit) {
+        loadAllData();
+      } else {
+        setAttendance(prev => prev.filter(a => a.id !== tempId));
+      }
       showToast(err.message || 'Failed to record attendance', 'danger');
     }
   };
 
   const handleDeleteAttendance = async (id) => {
     if (window.confirm('Delete this attendance entry?')) {
+      const oldAttendance = [...attendance];
+      setAttendance(prev => prev.filter(a => a.id !== id));
+
       try {
         await deleteAttendance(id);
-        setAttendance(prev => prev.filter(a => a.id !== id));
         showToast('Attendance record deleted.');
       } catch (err) {
+        setAttendance(oldAttendance);
         showToast(err.message || 'Failed to delete attendance entry', 'danger');
       }
     }
@@ -398,67 +455,120 @@ export default function App() {
   };
 
   const handleSaveAdvance = async (advanceId, record) => {
+    setActiveModal(null);
+    setModalData(null);
+
+    const isEdit = !!advanceId;
+    const tempId = advanceId || `temp-${Date.now()}`;
+    const associatedStaff = staff.find(s => s.id === record.staffId);
+    const optimisticRecord = {
+      ...record,
+      id: tempId,
+      staff: associatedStaff || null
+    };
+
+    if (isEdit) {
+      setAdvances(prev => prev.map(a => a.id === advanceId ? optimisticRecord : a));
+    } else {
+      setAdvances(prev => [optimisticRecord, ...prev]);
+    }
+
     try {
-      if (advanceId) {
+      if (isEdit) {
         const updated = await updateAdvance(advanceId, record);
-        setAdvances(prev => prev.map(a => a.id === updated.id ? updated : a));
+        setAdvances(prev => prev.map(a => a.id === tempId ? updated : a));
         showToast('Advance transaction updated.');
       } else {
         const added = await addAdvance(record.staffId, record);
-        setAdvances(prev => [added, ...prev]);
+        setAdvances(prev => prev.map(a => a.id === tempId ? added : a));
         showToast('Advance given successfully!');
       }
-      setActiveModal(null);
-      setModalData(null);
     } catch (err) {
+      if (isEdit) {
+        loadAllData();
+      } else {
+        setAdvances(prev => prev.filter(a => a.id !== tempId));
+      }
       showToast(err.message || 'Failed to record advance', 'danger');
     }
   };
 
   const handleDeleteAdvance = async (id) => {
     if (window.confirm('Delete this cash advance record?')) {
+      const oldAdvances = [...advances];
+      setAdvances(prev => prev.filter(a => a.id !== id));
+
       try {
         await deleteAdvance(id);
-        setAdvances(prev => prev.filter(a => a.id !== id));
         showToast('Advance entry deleted.');
       } catch (err) {
+        setAdvances(oldAdvances);
         showToast(err.message || 'Failed to delete advance entry', 'danger');
       }
     }
   };
 
   const handleSaveSaving = async (staffId, record) => {
+    setActiveModal(null);
+    setModalData(null);
+
+    const tempId = `temp-${Date.now()}`;
+    const associatedStaff = staff.find(s => s.id === staffId);
+    const optimisticRecord = {
+      ...record,
+      id: tempId,
+      staffId,
+      staff: associatedStaff || null
+    };
+
+    setSavings(prev => [optimisticRecord, ...prev]);
+
     try {
       const added = await addSaving(staffId, record);
-      setSavings(prev => [added, ...prev]);
+      setSavings(prev => prev.map(s => s.id === tempId ? added : s));
       showToast(`${record.type === 'deposit' ? 'Deposit' : 'Withdrawal'} successful!`);
-      setActiveModal(null);
-      setModalData(null);
     } catch (err) {
+      setSavings(prev => prev.filter(s => s.id !== tempId));
       showToast(err.message || 'Failed to process savings', 'danger');
     }
   };
 
   const handleDeleteSaving = async (id) => {
     if (window.confirm('Erase this savings ledger transaction?')) {
+      const oldSavings = [...savings];
+      setSavings(prev => prev.filter(s => s.id !== id));
+
       try {
         await deleteSaving(id);
-        setSavings(prev => prev.filter(s => s.id !== id));
         showToast('Savings record deleted.');
       } catch (err) {
+        setSavings(oldSavings);
         showToast(err.message || 'Failed to delete savings record', 'danger');
       }
     }
   };
 
   const handleSavePayment = async (staffId, record) => {
+    setActiveModal(null);
+    setModalData(null);
+
+    const tempId = `temp-${Date.now()}`;
+    const associatedStaff = staff.find(s => s.id === staffId);
+    const optimisticRecord = {
+      ...record,
+      id: tempId,
+      staffId,
+      staff: associatedStaff || null
+    };
+
+    setPayments(prev => [optimisticRecord, ...prev]);
+
     try {
       const added = await addPayment(staffId, record);
-      setPayments(prev => [added, ...prev]);
+      setPayments(prev => prev.map(p => p.id === tempId ? added : p));
       showToast('Salary payment transaction recorded successfully!');
-      setActiveModal(null);
-      setModalData(null);
     } catch (err) {
+      setPayments(prev => prev.filter(p => p.id !== tempId));
       showToast(err.message || 'Failed to pay salary', 'danger');
     }
   };

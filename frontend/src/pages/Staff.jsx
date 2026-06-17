@@ -105,7 +105,7 @@ export default function Staff({
                         <div style={{ display: 'flex', gap: '6px' }}>
                           <button 
                             className="btn btn-sm btn-outline btn-icon-only" 
-                            onClick={() => onViewProfile(s.id)} 
+                            onClick={() => onViewProfile(s)} 
                             title="View Profile"
                           >
                             <span className="material-symbols-outlined">visibility</span>

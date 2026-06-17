@@ -100,7 +100,7 @@ export default function Salary({
                           </span>
                         ) : '-'}
                       </td>
-                      <td>{fmtCurrency(sal.baseSalary)}</td>
+                      <td>{fmtCurrency(sal.basicPay)}</td>
                       <td>
                         {sal.otPay > 0 ? (
                           <span style={{ color: 'var(--success)', fontWeight: 600 }}>
