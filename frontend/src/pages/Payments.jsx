@@ -85,33 +85,98 @@ export default function Payments({
                 <div className="card-body">
                   {/* Payment Breakdown */}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
-                      <span style={{ color: 'var(--text-secondary)' }}>Present Days</span>
-                      <span>{sal ? sal.presentDays : 0} days</span>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
-                      <span style={{ color: 'var(--text-secondary)' }}>Total Hours Worked</span>
-                      <span>{sal ? sal.totalWorked : 0} hrs</span>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
-                      <span style={{ color: 'var(--text-secondary)' }}>Overtime Hours</span>
-                      <span style={{ color: 'var(--warning)', fontWeight: 500 }}>
-                        {sal && sal.totalOT > 0 ? `+${sal.totalOT} hrs` : '-'}
-                      </span>
-                    </div>
+
+                    {s.salaryType === 'monthly' ? (
+                      // ── Monthly staff breakdown ─────────────────────────
+                      <>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
+                          <span style={{ color: 'var(--text-secondary)' }}>Present Days</span>
+                          <span>
+                            {sal ? sal.presentDays : 0} days
+                            {sal && sal.halfDays > 0 && (
+                              <span style={{ fontSize: '11px', color: 'var(--warning)', marginLeft: '4px' }}>
+                                (+{sal.halfDays} half)
+                              </span>
+                            )}
+                          </span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
+                          <span style={{ color: 'var(--text-secondary)' }}>Total Hours Worked</span>
+                          <span>{sal ? sal.totalWorked : 0} hrs</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
+                          <span style={{ color: 'var(--text-secondary)' }}>Overtime Hours</span>
+                          <span style={{ color: 'var(--warning)', fontWeight: 500 }}>
+                            {sal && sal.totalOT > 0 ? `+${sal.totalOT} hrs` : '-'}
+                          </span>
+                        </div>
+                      </>
+                    ) : (
+                      // ── Daily wage staff breakdown ───────────────────────
+                      <>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
+                          <span style={{ color: 'var(--text-secondary)' }}>Days Worked</span>
+                          <span>
+                            {sal ? sal.presentDays : 0} days
+                            {sal && sal.halfDays > 0 && (
+                              <span style={{ fontSize: '11px', color: 'var(--warning)', marginLeft: '4px' }}>
+                                (+{sal.halfDays} part)
+                              </span>
+                            )}
+                          </span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
+                          <span style={{ color: 'var(--text-secondary)' }}>Hours Worked / Required</span>
+                          <span>
+                            {sal ? sal.totalWorked : 0} hrs
+                            <span style={{ color: 'var(--text-muted)', marginLeft: '4px' }}>
+                              / {(sal ? (sal.presentDays + sal.halfDays) * (sal.stdHours || s.workingHours || 8) : 0)} req
+                            </span>
+                          </span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
+                          <span style={{ color: 'var(--text-secondary)' }}>Rate</span>
+                          <span>
+                            {fmtCurrency(s.dailyWage)}/day
+                            <span style={{ color: 'var(--text-muted)', fontSize: '11px', marginLeft: '4px' }}>
+                              ({fmtCurrency(Number((s.dailyWage / (s.workingHours || 8)).toFixed(2)))}/hr)
+                            </span>
+                          </span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
+                          <span style={{ color: 'var(--text-secondary)' }}>Overtime Hours</span>
+                          <span style={{ color: 'var(--warning)', fontWeight: 500 }}>
+                            {sal && sal.totalOT > 0 ? `+${sal.totalOT} hrs` : '-'}
+                          </span>
+                        </div>
+                      </>
+                    )}
+
                     <div style={{ height: '1px', background: 'var(--border)', margin: '4px 0' }}></div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
-                      <span style={{ color: 'var(--text-secondary)' }}>Gross Salary</span>
-                      <strong>{fmtCurrency(gross)}</strong>
+                      <span style={{ color: 'var(--text-secondary)' }}>
+                        {s.salaryType === 'daily' ? 'Earned (Base)' : 'Gross Salary'}
+                      </span>
+                      <strong>{fmtCurrency(sal ? sal.basicPay : 0)}</strong>
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
-                      <span style={{ color: 'var(--text-secondary)' }}>Advance Deductions</span>
-                      <strong style={{ color: 'var(--danger)' }}>-{fmtCurrency(advBal)}</strong>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
-                      <span style={{ color: 'var(--text-secondary)' }}>Savings Added</span>
-                      <strong style={{ color: 'var(--success)' }}>+{fmtCurrency(savBal)}</strong>
-                    </div>
+                    {sal && sal.otPay > 0 && (
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
+                        <span style={{ color: 'var(--text-secondary)' }}>OT Pay</span>
+                        <strong style={{ color: 'var(--warning)' }}>+{fmtCurrency(sal.otPay)}</strong>
+                      </div>
+                    )}
+                    {advBal > 0 && (
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
+                        <span style={{ color: 'var(--text-secondary)' }}>Advance Deductions</span>
+                        <strong style={{ color: 'var(--danger)' }}>-{fmtCurrency(advBal)}</strong>
+                      </div>
+                    )}
+                    {savBal > 0 && (
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
+                        <span style={{ color: 'var(--text-secondary)' }}>Savings Added</span>
+                        <strong style={{ color: 'var(--success)' }}>+{fmtCurrency(savBal)}</strong>
+                      </div>
+                    )}
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', fontWeight: 700, paddingTop: '8px', borderTop: '1px solid var(--border)' }}>
                       <span>Final Payable</span>
                       <span style={{ color: 'var(--primary)' }}>{fmtCurrency(finalPayable)}</span>

@@ -77,6 +77,11 @@ export default function Salary({
                         <span className="badge badge-info">
                           {s.salaryType === 'monthly' ? 'Monthly' : 'Daily'}
                         </span>
+                        {s.salaryType === 'daily' && (
+                          <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '3px' }}>
+                            {fmtCurrency(s.dailyWage)}/day · {s.workingHours || 8} hrs
+                          </div>
+                        )}
                       </td>
                       <td>
                         <span style={{ color: 'var(--success)', fontWeight: 600 }}>
@@ -93,7 +98,14 @@ export default function Salary({
                           {sal.absentDays}
                         </span>
                       </td>
-                      <td>{sal.totalWorked} hrs</td>
+                      <td>
+                        {sal.totalWorked} hrs
+                        {s.salaryType === 'daily' && (
+                          <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '2px' }}>
+                            req: {(sal.presentDays + sal.halfDays) * (sal.stdHours || s.workingHours || 8)} hrs
+                          </div>
+                        )}
+                      </td>
                       <td>
                         {sal.totalOT > 0 ? (
                           <span style={{ color: 'var(--warning)', fontWeight: 600 }}>
@@ -172,7 +184,14 @@ export default function Salary({
                   <div className="mobile-card-body">
                     <div className="mobile-card-row">
                       <span className="mobile-card-label">Rate</span>
-                      <span className="mobile-card-value">{rate}</span>
+                      <span className="mobile-card-value">
+                        {rate}
+                        {s.salaryType === 'daily' && (
+                          <span style={{ fontSize: '11px', color: 'var(--text-muted)', marginLeft: '4px' }}>
+                            ({s.workingHours || 8} hrs/day req)
+                          </span>
+                        )}
+                      </span>
                     </div>
 
                     <div className="mobile-card-row">
@@ -196,7 +215,14 @@ export default function Salary({
 
                     <div className="mobile-card-row">
                       <span className="mobile-card-label">Hours Worked</span>
-                      <span className="mobile-card-value">{sal.totalWorked} hrs</span>
+                      <span className="mobile-card-value">
+                        {sal.totalWorked} hrs
+                        {s.salaryType === 'daily' && (
+                          <span style={{ fontSize: '11px', color: 'var(--text-muted)', marginLeft: '4px' }}>
+                            / {(sal.presentDays + sal.halfDays) * (sal.stdHours || s.workingHours || 8)} req
+                          </span>
+                        )}
+                      </span>
                     </div>
 
                     <div className="mobile-card-row">
@@ -205,7 +231,7 @@ export default function Salary({
                     </div>
 
                     <div className="mobile-card-row" style={{ marginTop: '4px', paddingTop: '8px', borderTop: '1px dashed var(--border)' }}>
-                      <span className="mobile-card-label">Base Salary</span>
+                      <span className="mobile-card-label">{s.salaryType === 'daily' ? 'Earned (Base)' : 'Base Salary'}</span>
                       <span className="mobile-card-value">{fmtCurrency(sal.basicPay)}</span>
                     </div>
 

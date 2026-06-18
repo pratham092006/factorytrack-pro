@@ -253,47 +253,77 @@ export default function App() {
       .reduce((sum, s) => sum + (s.type === 'deposit' ? s.amount : -s.amount), 0);
   };
 
-  // Compute Wages / Payroll Calculations for Selected Month
+  // Compute Wages / Payroll Calculations for Selected Month.
+  // OT is always derived live from workedHours vs the staff's CURRENT stdHours,
+  // so editing a staff member's daily wage or working hours instantly recalculates
+  // all salary/OT figures without needing to re-mark attendance.
   const calcStaffSalary = (staffId, monthKey) => {
     const s = staff.find(x => x.id === staffId);
     if (!s) return null;
 
     const workDays = settings.workingDaysPerMonth || 26;
-    const otMult = settings.otMultiplier || 1.5;
+    const otMult  = settings.otMultiplier || 1.5;
+    const stdHours = Number(s.workingHours) || 8;   // always use the CURRENT value
 
-    const att = attendance.filter(a => a.staffId === staffId && a.date.slice(0, 7) === monthKey);
+    const att = attendance.filter(
+      a => a.staffId === staffId && a.date.slice(0, 7) === monthKey
+    );
+
     const presentDays = att.filter(a => a.status === 'present').length;
-    const halfDays = att.filter(a => a.status === 'half-day' || a.status === 'halfday').length;
-    const absentDays = att.filter(a => a.status === 'absent').length;
-    
+    const halfDays    = att.filter(a => a.status === 'half-day' || a.status === 'halfday').length;
+    const absentDays  = att.filter(a => a.status === 'absent').length;
+
     const totalWorked = att.reduce((sum, a) => sum + (a.workedHours || 0), 0);
-    const totalOT = att.reduce((sum, a) => sum + (a.overtimeHours || 0), 0);
 
-    let baseSalary = 0, otPay = 0, grossSalary = 0;
+    let baseSalary = 0, otPay = 0;
 
-    const stdHours = s.workingHours || 8;
     if (s.salaryType === 'monthly') {
+      // Monthly: pay by day count; OT computed live from workedHours vs current stdHours
       const perDayRate = s.monthlySalary / workDays;
-      baseSalary = (presentDays + halfDays * 0.5) * perDayRate;
       const hourlyRate = perDayRate / stdHours;
-      otPay = totalOT * hourlyRate * otMult;
+      baseSalary = (presentDays + halfDays * 0.5) * perDayRate;
+
+      // Recalculate OT per record from workedHours so staff edits take effect immediately
+      att.forEach(a => {
+        if (a.status !== 'present' && a.status !== 'half-day' && a.status !== 'halfday') return;
+        const worked = a.workedHours || 0;
+        if (worked > stdHours) otPay += (worked - stdHours) * hourlyRate * otMult;
+      });
+
     } else {
-      baseSalary = (presentDays + halfDays * 0.5) * s.dailyWage;
+      // Daily wage: pay is proportional to hours actually worked up to stdHours per day.
+      // Anything beyond stdHours is overtime.
       const hourlyRate = s.dailyWage / stdHours;
-      otPay = totalOT * hourlyRate * otMult;
+
+      att.forEach(a => {
+        if (a.status !== 'present' && a.status !== 'half-day' && a.status !== 'halfday') return;
+        const worked = a.workedHours || 0;
+        const regularHours = Math.min(worked, stdHours);
+        const otHours      = worked > stdHours ? worked - stdHours : 0;
+        baseSalary += regularHours * hourlyRate;
+        otPay      += otHours * hourlyRate * otMult;
+      });
     }
 
-    grossSalary = baseSalary + otPay;
+    // Recompute total OT hours live from attendance (don't rely on stored overtimeHours)
+    const totalOT = att.reduce((sum, a) => {
+      if (a.status !== 'present' && a.status !== 'half-day' && a.status !== 'halfday') return sum;
+      const worked = a.workedHours || 0;
+      return sum + (worked > stdHours ? worked - stdHours : 0);
+    }, 0);
+
+    const grossSalary = baseSalary + otPay;
 
     return {
       staffId,
       presentDays,
       halfDays,
       absentDays,
+      stdHours,                                         // expose so UI can show it
       totalWorked: Number(totalWorked.toFixed(2)),
-      totalOT: Number(totalOT.toFixed(2)),
-      basicPay: Number(baseSalary.toFixed(2)),
-      otPay: Number(otPay.toFixed(2)),
+      totalOT:     Number(totalOT.toFixed(2)),
+      basicPay:    Number(baseSalary.toFixed(2)),
+      otPay:       Number(otPay.toFixed(2)),
       grossSalary: Number(grossSalary.toFixed(2))
     };
   };

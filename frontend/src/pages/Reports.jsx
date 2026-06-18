@@ -95,37 +95,37 @@ export default function Reports({
       {/* Summary Stats */}
       <div className="stats-grid" style={{ marginBottom: '24px' }}>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(99,102,241,0.15)' }}>
-            <span className="material-symbols-outlined" style={{ color: 'var(--primary)' }}>groups</span>
+          <div className="stat-icon-wrapper blue">
+            <span className="material-symbols-outlined">groups</span>
           </div>
-          <div>
+          <div className="stat-info">
             <div className="stat-label">Total Staff</div>
             <div className="stat-value">{reportRows.length}</div>
           </div>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(16,185,129,0.15)' }}>
-            <span className="material-symbols-outlined" style={{ color: 'var(--success)' }}>account_balance_wallet</span>
+          <div className="stat-icon-wrapper green">
+            <span className="material-symbols-outlined">account_balance_wallet</span>
           </div>
-          <div>
+          <div className="stat-info">
             <div className="stat-label">Total Gross Payroll</div>
             <div className="stat-value">{fmtCurrency(totalGross)}</div>
           </div>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(249,115,22,0.15)' }}>
-            <span className="material-symbols-outlined" style={{ color: 'var(--warning)' }}>payments</span>
+          <div className="stat-icon-wrapper orange">
+            <span className="material-symbols-outlined">payments</span>
           </div>
-          <div>
+          <div className="stat-info">
             <div className="stat-label">Total Net Payable</div>
             <div className="stat-value">{fmtCurrency(totalNet)}</div>
           </div>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(239,68,68,0.15)' }}>
-            <span className="material-symbols-outlined" style={{ color: 'var(--danger)' }}>paid</span>
+          <div className="stat-icon-wrapper red">
+            <span className="material-symbols-outlined">paid</span>
           </div>
-          <div>
+          <div className="stat-info">
             <div className="stat-label">Total Disbursed</div>
             <div className="stat-value">{fmtCurrency(totalPayments)}</div>
           </div>

@@ -63,12 +63,14 @@ export default function Settings({
         {/* Settings Form */}
         <form onSubmit={handleSubmit} className="card" style={{ gridColumn: 'span 1' }}>
           <div className="card-header">
-            <span className="material-symbols-outlined" style={{ color: 'var(--primary)' }}>tune</span>
-            <span style={{ fontWeight: 700 }}>Configuration & Profile</span>
+            <div className="card-title">
+              <span className="material-symbols-outlined">tune</span>
+              Configuration & Profile
+            </div>
           </div>
           <div className="card-body">
             <div className="form-group">
-              <label>Factory / Organization Name</label>
+              <label className="form-label">Factory / Organization Name</label>
               <input
                 type="text"
                 className="form-control"
@@ -80,7 +82,7 @@ export default function Settings({
 
             <div className="grid-2" style={{ gap: '12px', marginBottom: '16px' }}>
               <div className="form-group" style={{ marginBottom: 0 }}>
-                <label>Currency Symbol</label>
+                <label className="form-label">Currency Symbol</label>
                 <input
                   type="text"
                   className="form-control"
@@ -90,7 +92,7 @@ export default function Settings({
                 />
               </div>
               <div className="form-group" style={{ marginBottom: 0 }}>
-                <label>Standard Working Days/Mo</label>
+                <label className="form-label">Standard Working Days/Mo</label>
                 <input
                   type="number"
                   className="form-control"
@@ -102,7 +104,7 @@ export default function Settings({
             </div>
 
             <div className="form-group">
-              <label>Overtime Hourly Multiplier</label>
+              <label className="form-label">Overtime Hourly Multiplier</label>
               <input
                 type="number"
                 step="0.1"
@@ -112,38 +114,41 @@ export default function Settings({
                 required
               />
               <small style={{ color: 'var(--text-muted)', fontSize: '11px', display: 'block', marginTop: '4px' }}>
-                Example: 1.5 means overtime hours are paid at 150% of the normal hourly rate.
+                Example: 1.5x means overtime hours are paid at 150% of the normal hourly rate.
               </small>
             </div>
 
-            <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 0' }}>
+            <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 14px', background: 'var(--bg-input)', borderRadius: '10px', border: '1px solid var(--border)' }}>
               <input
                 type="checkbox"
                 id="darkModeToggle"
                 checked={darkMode}
                 onChange={e => setDarkMode(e.target.checked)}
-                style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+                style={{ width: '18px', height: '18px', cursor: 'pointer', accentColor: 'var(--primary)' }}
               />
-              <label htmlFor="darkModeToggle" style={{ marginBottom: 0, cursor: 'pointer', fontWeight: 500 }}>
+              <label htmlFor="darkModeToggle" style={{ marginBottom: 0, cursor: 'pointer', fontWeight: 600, fontSize: '13px' }}>
                 Enable Dark Theme
               </label>
+              <span className="material-symbols-outlined" style={{ fontSize: '18px', color: 'var(--text-muted)', marginLeft: 'auto' }}>
+                {darkMode ? 'dark_mode' : 'light_mode'}
+              </span>
             </div>
 
             <div style={{ height: '1px', background: 'var(--border)', margin: '16px 0' }}></div>
 
             <div className="form-group">
-              <label>Administrator Username</label>
+              <label className="form-label">Administrator Username</label>
               <input
                 type="text"
                 className="form-control"
                 value={currentUser?.username || ''}
                 disabled
-                style={{ background: 'var(--bg-secondary)', cursor: 'not-allowed' }}
+                style={{ opacity: 0.7, cursor: 'not-allowed' }}
               />
             </div>
 
             <div className="form-group">
-              <label>New Password (Optional)</label>
+              <label className="form-label">New Password (Optional)</label>
               <input
                 type="password"
                 className="form-control"
@@ -164,8 +169,10 @@ export default function Settings({
         {/* Database / Maintenance Tools */}
         <div className="card" style={{ gridColumn: 'span 1', height: 'fit-content' }}>
           <div className="card-header">
-            <span className="material-symbols-outlined" style={{ color: 'var(--danger)' }}>settings_suggest</span>
-            <span style={{ fontWeight: 700 }}>System Maintenance</span>
+            <div className="card-title">
+              <span className="material-symbols-outlined" style={{ color: 'var(--danger)' }}>settings_suggest</span>
+              System Maintenance
+            </div>
           </div>
           <div className="card-body">
             <div style={{ marginBottom: '20px' }}>

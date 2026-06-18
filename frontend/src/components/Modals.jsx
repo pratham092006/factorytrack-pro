@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 
 // Common Modal Wrapper
-function ModalWrapper({ isOpen, onClose, title, children }) {
+function ModalWrapper({ isOpen, onClose, title, children, accent = 'primary' }) {
   if (!isOpen) return null;
   return (
     <div className="modal-backdrop open" onClick={(e) => e.target.className.includes('modal-backdrop') && onClose()}>
-      <div className="modal fade-in">
+      <div className="modal fade-in" style={{ position: 'relative' }}>
+        {/* Colored accent top stripe */}
+        <div className={`modal-header-accent ${accent}`} />
         <div className="modal-header">
           <div className="modal-title">{title}</div>
-          <button className="modal-close" onClick={onClose}>
+          <button className="modal-close" onClick={onClose} aria-label="Close">
             <span className="material-symbols-outlined">close</span>
           </button>
         </div>
@@ -91,7 +93,7 @@ export function StaffModal({ isOpen, onClose, staffMember, onSave }) {
   };
 
   return (
-    <ModalWrapper isOpen={isOpen} onClose={onClose} title={staffMember ? "Edit Staff Member" : "Add New Staff"}>
+    <ModalWrapper isOpen={isOpen} onClose={onClose} title={staffMember ? "Edit Staff Member" : "Add New Staff"} accent="primary">
       <form onSubmit={handleSubmit}>
         <div className="modal-body">
           <div className="form-row">
@@ -280,7 +282,7 @@ export function AttendanceModal({ isOpen, onClose, staff, record, onSave }) {
   const staffName = selectedStaffObj ? selectedStaffObj.name : 'Unknown Staff';
 
   return (
-    <ModalWrapper isOpen={isOpen} onClose={onClose} title="Mark Attendance">
+    <ModalWrapper isOpen={isOpen} onClose={onClose} title="Mark Attendance" accent="success">
       <form onSubmit={handleSubmit}>
         <div className="modal-body">
           <div className="form-group">
@@ -407,7 +409,7 @@ export function AdvanceModal({ isOpen, onClose, staff, record, defaultStaffId, o
   };
 
   return (
-    <ModalWrapper isOpen={isOpen} onClose={onClose} title={record ? "Edit Advance" : "Give Advance"}>
+    <ModalWrapper isOpen={isOpen} onClose={onClose} title={record ? "Edit Advance" : "Give Advance"} accent="warning">
       <form onSubmit={handleSubmit}>
         <div className="modal-body">
           <div className="form-group">
@@ -527,6 +529,7 @@ export function SavingsModal({ isOpen, onClose, staff, type, defaultStaffId, onS
       isOpen={isOpen} 
       onClose={onClose} 
       title={type === 'deposit' ? "Deposit Savings" : "Withdraw Savings"}
+      accent={type === 'deposit' ? 'success' : 'warning'}
     >
       <form onSubmit={handleSubmit}>
         <div className="modal-body">
@@ -625,7 +628,7 @@ export function PaymentModal({ isOpen, onClose, staffMember, monthKey, monthLabe
   if (!staffMember || !metrics) return null;
 
   return (
-    <ModalWrapper isOpen={isOpen} onClose={onClose} title="Process Salary Payment">
+    <ModalWrapper isOpen={isOpen} onClose={onClose} title="Process Salary Payment" accent="success">
       <form onSubmit={handleSubmit}>
         <div className="modal-body">
           <div style={{ background: 'var(--neutral-light)', borderRadius: '12px', padding: '16px', marginBottom: '18px', border: '1px solid var(--border)' }}>
@@ -733,7 +736,7 @@ export function ProfileModal({ isOpen, onClose, staffMember, attendance, advance
   };
 
   return (
-    <ModalWrapper isOpen={isOpen} onClose={onClose} title="Employee Profile Details">
+    <ModalWrapper isOpen={isOpen} onClose={onClose} title="Employee Profile Details" accent="primary">
       <div className="modal-body" style={{ padding: '24px 28px' }}>
         {/* Profile Card Header (Matching Caleb White Student Details Header) */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '24px', flexWrap: 'wrap' }}>

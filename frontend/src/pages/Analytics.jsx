@@ -212,7 +212,7 @@ export default function Analytics({
       {/* Top Level Metric Cards */}
       <div className="stats-grid">
         <div className="stat-card">
-          <div className="stat-icon-wrapper" style={{ background: 'var(--success-light)', color: 'var(--success)' }}>
+          <div className="stat-icon-wrapper green">
             <span className="material-symbols-outlined">analytics</span>
           </div>
           <div className="stat-info">
@@ -222,7 +222,7 @@ export default function Analytics({
         </div>
 
         <div className="stat-card">
-          <div className="stat-icon-wrapper" style={{ background: 'var(--primary-light)', color: 'var(--primary)' }}>
+          <div className="stat-icon-wrapper blue">
             <span className="material-symbols-outlined">payments</span>
           </div>
           <div className="stat-info">
@@ -232,7 +232,7 @@ export default function Analytics({
         </div>
 
         <div className="stat-card">
-          <div className="stat-icon-wrapper" style={{ background: 'var(--danger-light)', color: 'var(--danger)' }}>
+          <div className="stat-icon-wrapper red">
             <span className="material-symbols-outlined">account_balance_wallet</span>
           </div>
           <div className="stat-info">
@@ -242,7 +242,7 @@ export default function Analytics({
         </div>
 
         <div className="stat-card">
-          <div className="stat-icon-wrapper" style={{ background: 'var(--info-light)', color: 'var(--info)' }}>
+          <div className="stat-icon-wrapper teal">
             <span className="material-symbols-outlined">savings</span>
           </div>
           <div className="stat-info">

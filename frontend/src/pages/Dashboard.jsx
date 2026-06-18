@@ -229,60 +229,24 @@ export default function Dashboard({
 
       {/* Stats Cards Grid */}
       <div className="stats-grid">
-        <div className="stat-card">
-          <div className="stat-icon-wrapper blue">
-            <span className="material-symbols-outlined">groups</span>
+        {[
+          { icon: 'groups',          color: 'blue',   value: staff.length,            label: 'Total Staff' },
+          { icon: 'how_to_reg',      color: 'green',  value: presentTodayCount,        label: 'Present Today' },
+          { icon: 'person_cancel',   color: 'red',    value: absentTodayCount,         label: 'Absent Today' },
+          { icon: 'monetization_on', color: 'purple', value: fmtCurrency(totalSalary), label: 'Salary Payable' },
+          { icon: 'payments',        color: 'orange', value: fmtCurrency(totalAdv),    label: 'Total Advances' },
+          { icon: 'savings',         color: 'teal',   value: fmtCurrency(totalSav),    label: 'Savings Held' },
+        ].map(({ icon, color, value, label }) => (
+          <div className="stat-card" key={label}>
+            <div className={`stat-icon-wrapper ${color}`}>
+              <span className="material-symbols-outlined">{icon}</span>
+            </div>
+            <div className="stat-info">
+              <div className="stat-value">{value}</div>
+              <div className="stat-label">{label}</div>
+            </div>
           </div>
-          <div className="stat-info">
-            <div className="stat-value">{staff.length}</div>
-            <div className="stat-label">Total Staff</div>
-          </div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-icon-wrapper green">
-            <span className="material-symbols-outlined">how_to_reg</span>
-          </div>
-          <div className="stat-info">
-            <div className="stat-value">{presentTodayCount}</div>
-            <div className="stat-label">Present Today</div>
-          </div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-icon-wrapper red">
-            <span className="material-symbols-outlined">person_cancel</span>
-          </div>
-          <div className="stat-info">
-            <div className="stat-value">{absentTodayCount}</div>
-            <div className="stat-label">Absent Today</div>
-          </div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-icon-wrapper purple">
-            <span className="material-symbols-outlined">monetization_on</span>
-          </div>
-          <div className="stat-info">
-            <div className="stat-value">{fmtCurrency(totalSalary)}</div>
-            <div className="stat-label">Salary Payable</div>
-          </div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-icon-wrapper orange">
-            <span className="material-symbols-outlined">payments</span>
-          </div>
-          <div className="stat-info">
-            <div className="stat-value">{fmtCurrency(totalAdv)}</div>
-            <div className="stat-label">Total Advances</div>
-          </div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-icon-wrapper teal">
-            <span className="material-symbols-outlined">savings</span>
-          </div>
-          <div className="stat-info">
-            <div className="stat-value">{fmtCurrency(totalSav)}</div>
-            <div className="stat-label">Savings Held</div>
-          </div>
-        </div>
+        ))}
       </div>
 
       {/* Charts Grid */}

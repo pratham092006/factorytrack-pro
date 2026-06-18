@@ -19,17 +19,22 @@ export default function Auth({ onLoginSuccess }) {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
+  const switchTab = (t) => {
+    setTab(t);
+    setErrorMsg('');
+    setSuccessMsg('');
+    setShowPassword(false);
+  };
+
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     if (!loginEmail || !loginPass) {
       setErrorMsg('Please fill all fields.');
       return;
     }
-    
     setErrorMsg('');
     setSuccessMsg('');
     setLoading(true);
-    
     try {
       const data = await loginUser(loginEmail, loginPass);
       if (data.success) {
@@ -50,25 +55,20 @@ export default function Auth({ onLoginSuccess }) {
       setErrorMsg('Please fill all fields.');
       return;
     }
-    
     if (regPass.length < 6) {
       setErrorMsg('Password must be at least 6 characters.');
       return;
     }
-    
     setErrorMsg('');
     setSuccessMsg('');
     setLoading(true);
-    
     try {
       const data = await registerUser(regFactory.trim(), regUserVal.trim(), regEmail.trim(), regPass);
       if (data.success) {
-        setSuccessMsg('Registration successful! Please sign in.');
-        setTab('login');
-        // Pre-fill login email
+        setSuccessMsg('Account created! Please sign in.');
+        switchTab('login');
         setLoginEmail(regEmail.trim());
         setLoginPass('');
-        setShowPassword(false);
       } else {
         setErrorMsg(data.message || 'Registration failed.');
       }
@@ -79,9 +79,52 @@ export default function Auth({ onLoginSuccess }) {
     }
   };
 
+  const PasswordInput = ({ value, onChange, placeholder = '••••••••' }) => (
+    <div style={{ position: 'relative' }}>
+      <input 
+        type={showPassword ? 'text' : 'password'} 
+        className="form-control" 
+        placeholder={placeholder}
+        value={value}
+        onChange={onChange}
+        style={{ paddingRight: '44px' }}
+        required
+      />
+      <button 
+        type="button"
+        onClick={() => setShowPassword(s => !s)}
+        style={{
+          position: 'absolute',
+          right: '12px',
+          top: '50%',
+          transform: 'translateY(-50%)',
+          background: 'none',
+          border: 'none',
+          cursor: 'pointer',
+          color: 'var(--text-muted)',
+          display: 'flex',
+          alignItems: 'center',
+          padding: '4px',
+          transition: 'color 0.15s ease'
+        }}
+        aria-label={showPassword ? 'Hide password' : 'Show password'}
+      >
+        <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
+          {showPassword ? 'visibility_off' : 'visibility'}
+        </span>
+      </button>
+    </div>
+  );
+
   return (
     <div className="auth-container">
+      {/* Animated background blobs */}
+      <div className="auth-bg-blob auth-bg-blob-1" />
+      <div className="auth-bg-blob auth-bg-blob-2" />
+      <div className="auth-bg-blob auth-bg-blob-3" />
+
       <div className="auth-card fade-in">
+        {/* Logo */}
         <div className="auth-logo">
           <div className="auth-logo-icon">
             <span className="material-symbols-outlined">precision_manufacturing</span>
@@ -90,35 +133,41 @@ export default function Auth({ onLoginSuccess }) {
           <p>Industrial Management Dashboard</p>
         </div>
 
+        {/* Tabs */}
         <div className="auth-tabs">
           <div 
             className={`auth-tab ${tab === 'login' ? 'active' : ''}`}
-            onClick={() => { setTab('login'); setErrorMsg(''); setSuccessMsg(''); setShowPassword(false); }}
+            onClick={() => switchTab('login')}
+            role="tab"
+            aria-selected={tab === 'login'}
           >
-            Login
+            Sign In
           </div>
           <div 
             className={`auth-tab ${tab === 'register' ? 'active' : ''}`}
-            onClick={() => { setTab('register'); setErrorMsg(''); setSuccessMsg(''); setShowPassword(false); }}
+            onClick={() => switchTab('register')}
+            role="tab"
+            aria-selected={tab === 'register'}
           >
             Register
           </div>
         </div>
 
+        {/* Alerts */}
         {errorMsg && (
           <div className="alert alert-danger" style={{ marginBottom: '20px' }}>
-            <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>error</span>
+            <span className="material-symbols-outlined" style={{ fontSize: '18px', flexShrink: 0 }}>error</span>
             {errorMsg}
           </div>
         )}
-
         {successMsg && (
           <div className="alert alert-success" style={{ marginBottom: '20px' }}>
-            <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>check_circle</span>
+            <span className="material-symbols-outlined" style={{ fontSize: '18px', flexShrink: 0 }}>check_circle</span>
             {successMsg}
           </div>
         )}
 
+        {/* Login Form */}
         {tab === 'login' ? (
           <form onSubmit={handleLoginSubmit}>
             <div className="form-group">
@@ -129,50 +178,38 @@ export default function Auth({ onLoginSuccess }) {
                 placeholder="e.g. manager@factory.com"
                 value={loginEmail}
                 onChange={e => setLoginEmail(e.target.value)}
+                autoComplete="email"
                 required
               />
             </div>
             <div className="form-group">
               <label className="form-label">Password</label>
-              <div className="password-input-wrapper" style={{ position: 'relative' }}>
-                <input 
-                  type={showPassword ? "text" : "password"} 
-                  className="form-control" 
-                  placeholder="••••••••"
-                  value={loginPass}
-                  onChange={e => setLoginPass(e.target.value)}
-                  style={{ paddingRight: '40px' }}
-                  required
-                />
-                <button 
-                  type="button"
-                  className="show-password-toggle"
-                  onClick={() => setShowPassword(!showPassword)}
-                  style={{
-                    position: 'absolute',
-                    right: '10px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    color: '#64748b',
-                    display: 'flex',
-                    alignItems: 'center',
-                    padding: '4px'
-                  }}
-                >
-                  <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
-                    {showPassword ? 'visibility_off' : 'visibility'}
-                  </span>
-                </button>
-              </div>
+              <PasswordInput 
+                value={loginPass} 
+                onChange={e => setLoginPass(e.target.value)} 
+              />
             </div>
-            <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '12px' }} disabled={loading}>
-              {loading ? 'Signing In...' : 'Sign In →'}
+            <button 
+              type="submit" 
+              className="btn btn-primary" 
+              style={{ width: '100%', padding: '13px', fontSize: '14px', marginTop: '4px' }} 
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <div className="spinner" style={{ width: '18px', height: '18px', borderWidth: '2px', margin: 0 }} />
+                  Signing In…
+                </>
+              ) : (
+                <>
+                  <span className="material-symbols-outlined">login</span>
+                  Sign In
+                </>
+              )}
             </button>
           </form>
         ) : (
+          /* Register Form */
           <form onSubmit={handleRegisterSubmit}>
             <div className="form-group">
               <label className="form-label">Factory / Company Name</label>
@@ -185,69 +222,71 @@ export default function Auth({ onLoginSuccess }) {
                 required
               />
             </div>
-            <div className="form-group">
-              <label className="form-label">Username</label>
-              <input 
-                type="text" 
-                className="form-control" 
-                placeholder="e.g. john"
-                value={regUserVal}
-                onChange={e => setRegUserVal(e.target.value)}
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label className="form-label">Email Address</label>
-              <input 
-                type="email" 
-                className="form-control" 
-                placeholder="e.g. john@factory.com"
-                value={regEmail}
-                onChange={e => setRegEmail(e.target.value)}
-                required
-              />
+            <div className="form-row">
+              <div className="form-group">
+                <label className="form-label">Username</label>
+                <input 
+                  type="text" 
+                  className="form-control" 
+                  placeholder="e.g. john"
+                  value={regUserVal}
+                  onChange={e => setRegUserVal(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Email Address</label>
+                <input 
+                  type="email" 
+                  className="form-control" 
+                  placeholder="e.g. john@factory.com"
+                  value={regEmail}
+                  onChange={e => setRegEmail(e.target.value)}
+                  autoComplete="email"
+                  required
+                />
+              </div>
             </div>
             <div className="form-group">
               <label className="form-label">Password</label>
-              <div className="password-input-wrapper" style={{ position: 'relative' }}>
-                <input 
-                  type={showPassword ? "text" : "password"} 
-                  className="form-control" 
-                  placeholder="Minimum 6 characters"
-                  value={regPass}
-                  onChange={e => setRegPass(e.target.value)}
-                  style={{ paddingRight: '40px' }}
-                  required
-                />
-                <button 
-                  type="button"
-                  className="show-password-toggle"
-                  onClick={() => setShowPassword(!showPassword)}
-                  style={{
-                    position: 'absolute',
-                    right: '10px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    color: '#64748b',
-                    display: 'flex',
-                    alignItems: 'center',
-                    padding: '4px'
-                  }}
-                >
-                  <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
-                    {showPassword ? 'visibility_off' : 'visibility'}
-                  </span>
-                </button>
-              </div>
+              <PasswordInput 
+                value={regPass} 
+                onChange={e => setRegPass(e.target.value)} 
+                placeholder="Minimum 6 characters"
+              />
             </div>
-            <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '12px' }} disabled={loading}>
-              {loading ? 'Creating Account...' : 'Create Account →'}
+            <button 
+              type="submit" 
+              className="btn btn-primary" 
+              style={{ width: '100%', padding: '13px', fontSize: '14px', marginTop: '4px' }} 
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <div className="spinner" style={{ width: '18px', height: '18px', borderWidth: '2px', margin: 0 }} />
+                  Creating Account…
+                </>
+              ) : (
+                <>
+                  <span className="material-symbols-outlined">person_add</span>
+                  Create Account
+                </>
+              )}
             </button>
           </form>
         )}
+
+        {/* Footer note */}
+        <p style={{ 
+          textAlign: 'center', 
+          marginTop: '20px', 
+          fontSize: '11px', 
+          color: 'var(--text-muted)',
+          lineHeight: 1.6
+        }}>
+          By using FactoryTrack Pro you agree to our{' '}
+          <span style={{ color: 'var(--primary)', cursor: 'pointer', fontWeight: 600 }}>Terms of Service</span>.
+        </p>
       </div>
     </div>
   );
