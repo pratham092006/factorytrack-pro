@@ -3,38 +3,33 @@ import { loginUser, registerUser } from '../api';
 
 export default function Auth({ onLoginSuccess }) {
   const [tab, setTab] = useState('login');
-  
-  // Login fields
+
   const [loginEmail, setLoginEmail] = useState('');
-  const [loginPass, setLoginPass] = useState('');
-  
-  // Register fields
+  const [loginPass, setLoginPass]   = useState('');
+
   const [regFactory, setRegFactory] = useState('');
   const [regUserVal, setRegUserVal] = useState('');
-  const [regEmail, setRegEmail] = useState('');
-  const [regPass, setRegPass] = useState('');
-  
-  const [errorMsg, setErrorMsg] = useState('');
+  const [regEmail, setRegEmail]     = useState('');
+  const [regPass, setRegPass]       = useState('');
+
+  const [errorMsg, setErrorMsg]   = useState('');
   const [successMsg, setSuccessMsg] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading]     = useState(false);
+  const [showLoginPass, setShowLoginPass]   = useState(false);
+  const [showRegPass,   setShowRegPass]     = useState(false);
 
   const switchTab = (t) => {
     setTab(t);
     setErrorMsg('');
     setSuccessMsg('');
-    setShowPassword(false);
+    setShowLoginPass(false);
+    setShowRegPass(false);
   };
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
-    if (!loginEmail || !loginPass) {
-      setErrorMsg('Please fill all fields.');
-      return;
-    }
-    setErrorMsg('');
-    setSuccessMsg('');
-    setLoading(true);
+    if (!loginEmail || !loginPass) { setErrorMsg('Please fill all fields.'); return; }
+    setErrorMsg(''); setSuccessMsg(''); setLoading(true);
     try {
       const data = await loginUser(loginEmail, loginPass);
       if (data.success) {
@@ -52,16 +47,10 @@ export default function Auth({ onLoginSuccess }) {
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
     if (!regFactory || !regUserVal || !regEmail || !regPass) {
-      setErrorMsg('Please fill all fields.');
-      return;
+      setErrorMsg('Please fill all fields.'); return;
     }
-    if (regPass.length < 6) {
-      setErrorMsg('Password must be at least 6 characters.');
-      return;
-    }
-    setErrorMsg('');
-    setSuccessMsg('');
-    setLoading(true);
+    if (regPass.length < 6) { setErrorMsg('Password must be at least 6 characters.'); return; }
+    setErrorMsg(''); setSuccessMsg(''); setLoading(true);
     try {
       const data = await registerUser(regFactory.trim(), regUserVal.trim(), regEmail.trim(), regPass);
       if (data.success) {
@@ -79,42 +68,20 @@ export default function Auth({ onLoginSuccess }) {
     }
   };
 
-  const PasswordInput = ({ value, onChange, placeholder = '••••••••' }) => (
-    <div style={{ position: 'relative' }}>
-      <input 
-        type={showPassword ? 'text' : 'password'} 
-        className="form-control" 
-        placeholder={placeholder}
-        value={value}
-        onChange={onChange}
-        style={{ paddingRight: '44px' }}
-        required
-      />
-      <button 
-        type="button"
-        onClick={() => setShowPassword(s => !s)}
-        style={{
-          position: 'absolute',
-          right: '12px',
-          top: '50%',
-          transform: 'translateY(-50%)',
-          background: 'none',
-          border: 'none',
-          cursor: 'pointer',
-          color: 'var(--text-muted)',
-          display: 'flex',
-          alignItems: 'center',
-          padding: '4px',
-          transition: 'color 0.15s ease'
-        }}
-        aria-label={showPassword ? 'Hide password' : 'Show password'}
-      >
-        <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
-          {showPassword ? 'visibility_off' : 'visibility'}
-        </span>
-      </button>
-    </div>
-  );
+  /* ── shared eye-button style ── */
+  const eyeBtnStyle = {
+    position: 'absolute',
+    right: '12px',
+    top: '50%',
+    transform: 'translateY(-50%)',
+    background: 'none',
+    border: 'none',
+    cursor: 'pointer',
+    color: 'var(--text-muted)',
+    display: 'flex',
+    alignItems: 'center',
+    padding: '4px',
+  };
 
   return (
     <div className="auth-container">
@@ -135,7 +102,7 @@ export default function Auth({ onLoginSuccess }) {
 
         {/* Tabs */}
         <div className="auth-tabs">
-          <div 
+          <div
             className={`auth-tab ${tab === 'login' ? 'active' : ''}`}
             onClick={() => switchTab('login')}
             role="tab"
@@ -143,7 +110,7 @@ export default function Auth({ onLoginSuccess }) {
           >
             Sign In
           </div>
-          <div 
+          <div
             className={`auth-tab ${tab === 'register' ? 'active' : ''}`}
             onClick={() => switchTab('register')}
             role="tab"
@@ -167,14 +134,14 @@ export default function Auth({ onLoginSuccess }) {
           </div>
         )}
 
-        {/* Login Form */}
+        {/* ── Login Form ── */}
         {tab === 'login' ? (
           <form onSubmit={handleLoginSubmit}>
             <div className="form-group">
               <label className="form-label">Email Address</label>
-              <input 
-                type="email" 
-                className="form-control" 
+              <input
+                type="email"
+                className="form-control"
                 placeholder="e.g. manager@factory.com"
                 value={loginEmail}
                 onChange={e => setLoginEmail(e.target.value)}
@@ -182,17 +149,37 @@ export default function Auth({ onLoginSuccess }) {
                 required
               />
             </div>
+
             <div className="form-group">
               <label className="form-label">Password</label>
-              <PasswordInput 
-                value={loginPass} 
-                onChange={e => setLoginPass(e.target.value)} 
-              />
+              <div style={{ position: 'relative' }}>
+                <input
+                  type={showLoginPass ? 'text' : 'password'}
+                  className="form-control"
+                  placeholder="••••••••"
+                  value={loginPass}
+                  onChange={e => setLoginPass(e.target.value)}
+                  autoComplete="current-password"
+                  style={{ paddingRight: '44px' }}
+                  required
+                />
+                <button
+                  type="button"
+                  style={eyeBtnStyle}
+                  onClick={() => setShowLoginPass(v => !v)}
+                  aria-label={showLoginPass ? 'Hide password' : 'Show password'}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
+                    {showLoginPass ? 'visibility_off' : 'visibility'}
+                  </span>
+                </button>
+              </div>
             </div>
-            <button 
-              type="submit" 
-              className="btn btn-primary" 
-              style={{ width: '100%', padding: '13px', fontSize: '14px', marginTop: '4px' }} 
+
+            <button
+              type="submit"
+              className="btn btn-primary"
+              style={{ width: '100%', padding: '13px', fontSize: '14px', marginTop: '4px' }}
               disabled={loading}
             >
               {loading ? (
@@ -208,37 +195,41 @@ export default function Auth({ onLoginSuccess }) {
               )}
             </button>
           </form>
+
         ) : (
-          /* Register Form */
+          /* ── Register Form ── */
           <form onSubmit={handleRegisterSubmit}>
             <div className="form-group">
               <label className="form-label">Factory / Company Name</label>
-              <input 
-                type="text" 
-                className="form-control" 
+              <input
+                type="text"
+                className="form-control"
                 placeholder="e.g. Acme Manufacturing"
                 value={regFactory}
                 onChange={e => setRegFactory(e.target.value)}
+                autoComplete="organization"
                 required
               />
             </div>
+
             <div className="form-row">
               <div className="form-group">
                 <label className="form-label">Username</label>
-                <input 
-                  type="text" 
-                  className="form-control" 
+                <input
+                  type="text"
+                  className="form-control"
                   placeholder="e.g. john"
                   value={regUserVal}
                   onChange={e => setRegUserVal(e.target.value)}
+                  autoComplete="username"
                   required
                 />
               </div>
               <div className="form-group">
                 <label className="form-label">Email Address</label>
-                <input 
-                  type="email" 
-                  className="form-control" 
+                <input
+                  type="email"
+                  className="form-control"
                   placeholder="e.g. john@factory.com"
                   value={regEmail}
                   onChange={e => setRegEmail(e.target.value)}
@@ -247,18 +238,37 @@ export default function Auth({ onLoginSuccess }) {
                 />
               </div>
             </div>
+
             <div className="form-group">
               <label className="form-label">Password</label>
-              <PasswordInput 
-                value={regPass} 
-                onChange={e => setRegPass(e.target.value)} 
-                placeholder="Minimum 6 characters"
-              />
+              <div style={{ position: 'relative' }}>
+                <input
+                  type={showRegPass ? 'text' : 'password'}
+                  className="form-control"
+                  placeholder="Minimum 6 characters"
+                  value={regPass}
+                  onChange={e => setRegPass(e.target.value)}
+                  autoComplete="new-password"
+                  style={{ paddingRight: '44px' }}
+                  required
+                />
+                <button
+                  type="button"
+                  style={eyeBtnStyle}
+                  onClick={() => setShowRegPass(v => !v)}
+                  aria-label={showRegPass ? 'Hide password' : 'Show password'}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
+                    {showRegPass ? 'visibility_off' : 'visibility'}
+                  </span>
+                </button>
+              </div>
             </div>
-            <button 
-              type="submit" 
-              className="btn btn-primary" 
-              style={{ width: '100%', padding: '13px', fontSize: '14px', marginTop: '4px' }} 
+
+            <button
+              type="submit"
+              className="btn btn-primary"
+              style={{ width: '100%', padding: '13px', fontSize: '14px', marginTop: '4px' }}
               disabled={loading}
             >
               {loading ? (
@@ -276,11 +286,11 @@ export default function Auth({ onLoginSuccess }) {
           </form>
         )}
 
-        {/* Footer note */}
-        <p style={{ 
-          textAlign: 'center', 
-          marginTop: '20px', 
-          fontSize: '11px', 
+        {/* Footer */}
+        <p style={{
+          textAlign: 'center',
+          marginTop: '20px',
+          fontSize: '11px',
           color: 'var(--text-muted)',
           lineHeight: 1.6
         }}>
